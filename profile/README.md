@@ -14,6 +14,8 @@ New features in `oxid-quality-tools`:
 - **Generate all formats** - Use `--report-format=all` for HTML, JSON, and Markdown
 - **Fixed "Action Required" bug** - HTML reports now correctly show "All checks passed"
 - **Updated documentation** - MANUAL.md and README.md fully revised
+- **Fixed wrong exit code summarizing** - eliminated some false negatives
+- **Fixed Suggestions** - not promoting Legacy Patterns anymore
 
 See [quality-tools-module](https://github.com/OXID-eSales/quality-tools-module) for details.
 
