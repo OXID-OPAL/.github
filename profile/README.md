@@ -4,54 +4,71 @@ Internal tools and modules for OXID eSales development.
 
 ---
 
-## Quality Tools v1.3.0 — Test Intelligence & Stricter CLI
+## 🆕 Quality Tools v1.4.0 — Admin Validation & Smarter Reporting
 
-> `b-7.4.x` &bull; 20 February 2026
+> `b-7.4.x` &bull; 2 March 2026
 
-v1.3.0 focuses on **test quality analysis** and **CLI correctness**. The tool now understands your test structure, catches misplaced tests, and rejects flag combinations that never worked correctly.
+v1.4.0 adds a **full admin structure validator** (8 new checks) and makes reporting **sharper and more actionable**. The template linter now understands all OXID custom Twig tags natively.
 
-### What's new
+### Admin Structure Validator *(new)*
 
 ```
- TEST STRUCTURE          Scans your tests/ tree for structural problems
+ ADMIN CHECKS            Validates admin controller setup end-to-end
  ───────────────────────────────────────────────────────────────────────
- Infrastructure leaks    Unit tests using Registry, oxNew(), DatabaseProvider,
-                         ContainerFacade, IntegrationTestCase → suggests Integration/
- Suite config check      tests/Integration/ exists but phpunit.xml has no suite for it
- Bootstrap quality       Hardcoded paths, missing INSTALLATION_ROOT_PATH guard,
-                         _parent stubs hiding coverage gaps
- Suppression report      Lists @codeCoverageIgnore, @SuppressWarnings, phpcs:ignore,
-                         @phpstan-ignore in src/ across all output formats
+ Menu.xml wiring         cl= and list= point to registered controllers
+ Three-controller        Frameset / List / Main pattern completeness
+ Template format         No .html.twig extension, @module-id/ prefix required,
+                         no path separators after prefix
+ Template placement      Admin templates must live in views/twig/
+ Controller keys         snake_case with module prefix enforced
+ Dual registration       Flags controllers in BOTH metadata.php AND services.yaml
+ Language files           de/ and en/ lang files with required translation keys
 ```
 
+### Template Linting
+
 ```
- STATIC ANALYSIS         New and enhanced rules
+ OXID TWIG TAGS          Registered on the linter environment
  ───────────────────────────────────────────────────────────────────────
- ContainerFacadeIn-      Flags ContainerFacade::get() in modules targeting ^7.0
- ModulesRule (PHPStan)   → use constructor injection via services.yaml
- DeprecatedDatabase-     Now also catches DatabaseProvider::getDb() and getMaster()
- Provider (PHPMD)        (previously only Db::getDb())
+ Token parsers           capture, ifcontent, include_content,
+                         include_dynamic, hasrights
+ Functions               insert_tracker
+                         → No more false-positive "unknown tag" errors
 ```
 
+### Reporting Improvements
+
 ```
- CLI CHANGES             Breaking behavior changes
+ SHARPER OUTPUT          More context, less guesswork
  ───────────────────────────────────────────────────────────────────────
- Exclusive purpose flags --phpstan --phpmd now throws InvalidArgumentException
-                         (use --no-phpcs to skip one tool instead)
- --stop-on-error +       Now throws error (was silently ignored)
- --report-format
- Auto-implication         --coverage shows feedback that it enables --test
- TOON output             --caller=ai now emits TOON (30-60% fewer tokens than JSON)
- PHPUnit exit 255        Differentiates crash-during-run vs suite-loading-failure
+ Per-file infra leaks    tests/Unit/FooTest.php — uses Registry (infrastructure)
+                         (was: generic "Unit tests contain infrastructure code")
+ errors in test summary  TOON now shows passed / failed / errors / skipped
+ StaticAccess hints      Removable (→ inject ConfigInterface) vs justified
+                         (→ suppress or use ContainerFacade)
+ YAML snippets           services.yaml recommendation includes ready-to-use
+                         exclude config for Extension/ and Entity/
+ Exit code               Module structure ERRORs now produce exit code 1
 ```
 
-### Fixes
+### Other Changes
 
-- **Twig modules false positive** — `blocks` warning no longer fires for Twig-only modules
-- **Report data propagation** — suppression annotations and test structure data flow through to all report formats
-- **MANUAL.md** — corrected 6 factual errors, added all missing v1.3.0 documentation
+- Mock-context lines (`createMock`, `getMockBuilder`) excluded from infrastructure scanning
+- Assertion-referencing lines excluded from infrastructure scanning
+- `QueryBuilderFactory` pattern no longer matches `QueryBuilderFactoryInterface`
+- Blanket `@SuppressWarnings(PHPMD)` narrowed to specific rules throughout
 
 ---
+
+<details>
+<summary><b>Previous: v1.3.0 — Test Intelligence & Stricter CLI (February 2026)</b></summary>
+
+**Test structure:** Infrastructure leak detection, suite config check, bootstrap quality, suppression reporting
+**Static analysis:** ContainerFacadeInModulesRule (PHPStan), enhanced DatabaseProvider detection (PHPMD)
+**CLI:** Exclusive purpose flags, `--stop-on-error` + `--report-format` error, TOON output, PHPUnit exit 255 differentiation
+**Fixes:** Twig modules false positive, report data propagation
+
+</details>
 
 <details>
 <summary><b>Previous: v1.2.0 — Major Rule Expansion (February 2026)</b></summary>
