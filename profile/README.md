@@ -25,6 +25,8 @@ Patch release fixing **output discrepancies between AI and human mode**, **versi
                          ini_set warnings eliminated
  Human mode output       Docblock and template issues now shown inline
                          (was: hidden behind -v verbose flag)
+ hasToolFailures()       OutputHelper now checks all_passed flag — human
+                         mode no longer misses tool execution errors
 ```
 
 ### Changed
