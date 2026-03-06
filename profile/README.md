@@ -4,61 +4,51 @@ Internal tools and modules for OXID eSales development.
 
 ---
 
-## 🆕 Quality Tools v1.4.0 — Admin Validation & Smarter Reporting
+## 🔧 Quality Tools v1.4.1 — Bug Fixes & Output Parity
 
-> `b-7.4.x` &bull; 2 March 2026
+> `b-7.4.x` &bull; 6 March 2026
 
-v1.4.0 adds a **full admin structure validator** (8 new checks) and makes reporting **sharper and more actionable**. The template linter now understands all OXID custom Twig tags natively.
+Patch release fixing **output discrepancies between AI and human mode**, **version-aware documentation links**, and **bootstrap warnings**.
 
-### Admin Structure Validator *(new)*
+### Fixed
 
 ```
- ADMIN CHECKS            Validates admin controller setup end-to-end
+ BUG FIXES              What changed
  ───────────────────────────────────────────────────────────────────────
- Menu.xml wiring         cl= and list= point to registered controllers
- Three-controller        Frameset / List / Main pattern completeness
- Template format         No .html.twig extension, @module-id/ prefix required,
-                         no path separators after prefix
- Template placement      Admin templates must live in views/twig/
- Controller keys         snake_case with module prefix enforced
- Dual registration       Flags controllers in BOTH metadata.php AND services.yaml
- Language files           de/ and en/ lang files with required translation keys
+ Version-aware URLs      fix_suggestion links now point to the detected
+                         OXID version (was: hardcoded 7.0 / 7.3)
+ AI mode errors          --caller=ai now detects tool execution errors
+                         (non-zero exit + 0 violations → status: failed)
+ Exit code               Top-level exit code is non-zero when any tool
+                         reports failed status
+ Bootstrap warnings      INSTALLATION_ROOT_PATH redefinition + session
+                         ini_set warnings eliminated
+ Human mode output       Docblock and template issues now shown inline
+                         (was: hidden behind -v verbose flag)
 ```
 
-### Template Linting
+### Changed
 
 ```
- OXID TWIG TAGS          Registered on the linter environment
+ BOOTSTRAP RULE          Enforces correct OXID bootstrap loading pattern
  ───────────────────────────────────────────────────────────────────────
- Token parsers           capture, ifcontent, include_content,
-                         include_dynamic, hasrights
- Functions               insert_tracker
-                         → No more false-positive "unknown tag" errors
+ Guard required          if (!defined('INSTALLATION_ROOT_PATH'))
+                         must wrap the require
+ No pre-definition       define('INSTALLATION_ROOT_PATH', ...) before
+                         loading source/bootstrap.php is now flagged
 ```
-
-### Reporting Improvements
-
-```
- SHARPER OUTPUT          More context, less guesswork
- ───────────────────────────────────────────────────────────────────────
- Per-file infra leaks    tests/Unit/FooTest.php — uses Registry (infrastructure)
-                         (was: generic "Unit tests contain infrastructure code")
- errors in test summary  TOON now shows passed / failed / errors / skipped
- StaticAccess hints      Removable (→ inject ConfigInterface) vs justified
-                         (→ suppress or use ContainerFacade)
- YAML snippets           services.yaml recommendation includes ready-to-use
-                         exclude config for Extension/ and Entity/
- Exit code               Module structure ERRORs now produce exit code 1
-```
-
-### Other Changes
-
-- Mock-context lines (`createMock`, `getMockBuilder`) excluded from infrastructure scanning
-- Assertion-referencing lines excluded from infrastructure scanning
-- `QueryBuilderFactory` pattern no longer matches `QueryBuilderFactoryInterface`
-- Blanket `@SuppressWarnings(PHPMD)` narrowed to specific rules throughout
 
 ---
+
+<details>
+<summary><b>Previous: v1.4.0 — Admin Validation & Smarter Reporting (March 2026)</b></summary>
+
+**Admin validator (8 checks):** Menu.xml wiring, three-controller pattern, template format/placement, controller key conventions, dual registration, language files
+**Template linting:** OXID custom Twig tags (capture, ifcontent, include_content, include_dynamic, hasrights, insert_tracker)
+**Reporting:** Per-file infrastructure leaks, errors in test summary, StaticAccess hint differentiation, YAML snippets, exit code on structure ERRORs
+**Other:** Mock/assertion exclusion from infrastructure scanning, blanket PHPMD suppressions narrowed
+
+</details>
 
 <details>
 <summary><b>Previous: v1.3.0 — Test Intelligence & Stricter CLI (February 2026)</b></summary>
