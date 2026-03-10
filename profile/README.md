@@ -4,6 +4,45 @@ Internal tools and modules for OXID eSales development.
 
 ---
 
+## 🔮 Quality Tools v2.1.0 — Freya MCP Server
+
+> `b-7.4.x` &bull; 10 March 2026
+
+AI agents can now **browse the full quality rule catalog before writing code**,
+eliminating trial-and-error cycles with the quality gate.
+
+### Freya — Rule Browsing for AI Agents
+
+**Freya** is a read-only [MCP](https://modelcontextprotocol.io/) server that
+exposes all quality rules over JSON-RPC 2.0 stdio transport. Two tools:
+
+| Tool | Description |
+|------|-------------|
+| `list_rules` | Browse all rules with ID, severity, title. Filter by tool (`phpstan`, `phpmd`, `phpcs`, `structure`, `templates`, etc.) |
+| `get_rule` | Full details: what the rule detects, what to do instead, severity, documentation link |
+
+### Setup (one command)
+
+```bash
+# Native PHP
+vendor/bin/freya --setup
+
+# Docker (auto-detected)
+docker compose exec web php vendor/oxid-quality-tools/standards/bin/freya --setup
+```
+
+Writes `.mcp.json` to the shop root. Auto-detects Docker environments.
+Restart Claude Code to connect.
+
+### Workflow
+
+1. `list_rules` → see what rules apply to your area
+2. `get_rule` → understand detection pattern + fix suggestion
+3. Write compliant code on the first attempt
+4. `qualitytools:check` → verify
+
+---
+
 ## ⚠️ Quality Tools v2.0.0 — BREAKING: Architecture Rebuild
 
 > `b-7.4.x` &bull; 10 March 2026 &bull; **BREAKING CHANGE**
