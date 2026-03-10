@@ -4,43 +4,70 @@ Internal tools and modules for OXID eSales development.
 
 ---
 
-## 🔧 Quality Tools v1.4.1 — Bug Fixes & Output Parity
+## ⚠️ Quality Tools v2.0.0 — BREAKING: Architecture Rebuild
 
-> `b-7.4.x` &bull; 6 March 2026
+> `b-7.4.x` &bull; 10 March 2026 &bull; **BREAKING CHANGE**
 
-Patch release fixing **output discrepancies between AI and human mode**, **version-aware documentation links**, and **bootstrap warnings**.
+> [!CAUTION]
+> **v2.0 is a complete internal rebuild.** All v1.4.x CLI options and detection
+> rules are preserved, but the internal architecture is new. If you depend on
+> internal classes (parsers, output generators, rule classes), your code **will
+> break**. The previous v1.4.x codebase is archived on branch `b-7.4.x-v1.4`.
 
-### Fixed
-
-```
- BUG FIXES              What changed
- ───────────────────────────────────────────────────────────────────────
- Version-aware URLs      fix_suggestion links now point to the detected
-                         OXID version (was: hardcoded 7.0 / 7.3)
- AI mode errors          --caller=ai now detects tool execution errors
-                         (non-zero exit + 0 violations → status: failed)
- Exit code               Top-level exit code is non-zero when any tool
-                         reports failed status
- Bootstrap warnings      INSTALLATION_ROOT_PATH redefinition + session
-                         ini_set warnings eliminated
- Human mode output       Docblock and template issues now shown inline
-                         (was: hidden behind -v verbose flag)
- hasToolFailures()       OutputHelper now checks all_passed flag — human
-                         mode no longer misses tool execution errors
-```
-
-### Changed
+### What breaks
 
 ```
- BOOTSTRAP RULE          Enforces correct OXID bootstrap loading pattern
- ───────────────────────────────────────────────────────────────────────
- Guard required          if (!defined('INSTALLATION_ROOT_PATH'))
-                         must wrap the require
- No pre-definition       define('INSTALLATION_ROOT_PATH', ...) before
-                         loading source/bootstrap.php is now flagged
+ REMOVED CLASS                          REPLACEMENT
+ ──────────────────────────────────────────────────────────────────────────
+ AiOutputGenerator                      AiConsolePlugin (OutputPluginInterface)
+ OutputPresenter                        HumanConsolePlugin (OutputPluginInterface)
+ OutputHelper / OutputHelperInterface    Output plugins handle this internally
+ AiActionBuilder / AiActionBuilderInterface    Removed — no longer needed
+ 14 individual PHPStan rule classes      6 generic ConfigDriven*Rule classes
+ 8 individual PHPMD rule classes         1 generic ConfigDrivenPhpMdRule class
+ 2 individual PHPCS sniff classes        2 generic ConfigDriven*Sniff classes
 ```
+
+### What stays the same
+
+- All CLI options (`--phpstan`, `--phpmd`, `--phpcs`, `--test`, `--coverage`, etc.)
+- All 24 detection rules (same violations, same rule IDs, same fix suggestions)
+- TOON output format (`--caller=ai`)
+- Report formats (HTML, JSON, Markdown)
+- Exit codes and quality gate thresholds
+
+### What's new
+
+```
+ FEATURE                         DESCRIPTION
+ ──────────────────────────────────────────────────────────────────────────
+ Data-driven rule engine          All rules defined in config/rules.php —
+                                  add a rule = one config entry, zero PHP
+ Crash diagnostics                Actionable PHPUnit crash messages instead
+                                  of generic "PHPUnit crashed" (5 patterns)
+ Output plugin architecture       5 plugins: Human, AI, HTML, JSON, Markdown
+ Check/Result pattern             Typed results per check, QualityOrchestrator
+ --test-structure flag             Independent exclusive purpose flag
+```
+
+### Migration
+
+If you only use the CLI (`qualitytools:check`), **no changes needed**.
+
+If you import internal classes, check the
+[CHANGELOG](https://github.com/OXID-eSales/quality-tools-module/blob/b-7.4.x/CHANGELOG.md)
+for the full list of removed and replaced classes.
+
+**Archived branch:** `b-7.4.x-v1.4` preserves the v1.4.x codebase for reference.
 
 ---
+
+<details>
+<summary><b>Previous: v1.4.1 — Bug Fixes & Output Parity (March 2026)</b></summary>
+
+**Fixed:** Version-aware fix_suggestion URLs, AI mode error detection, exit code propagation, bootstrap warnings, human mode inline output, hasToolFailures() reliability
+
+</details>
 
 <details>
 <summary><b>Previous: v1.4.0 — Admin Validation & Smarter Reporting (March 2026)</b></summary>
