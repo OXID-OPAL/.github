@@ -4,102 +4,45 @@ Internal tools and modules for OXID eSales development.
 
 ---
 
-## 🔮 Quality Tools v2.1.0 — Freya MCP Server
+## 🩹 Quality Tools v2.1.1 — Bugfixes
 
-> `b-7.4.x` &bull; 10 March 2026
+> `b-7.4.x` &bull; 16 March 2026
 
-AI agents can now **browse the full quality rule catalog before writing code**,
-eliminating trial-and-error cycles with the quality gate.
+Four corrections to rule definitions, path resolution, and detection coverage.
 
-### Freya — Rule Browsing for AI Agents
+### Fixed
 
-**Freya** is a read-only [MCP](https://modelcontextprotocol.io/) server that
-exposes all quality rules over JSON-RPC 2.0 stdio transport. Two tools:
-
-| Tool | Description |
-|------|-------------|
-| `list_rules` | Browse all rules with ID, severity, title. Filter by tool (`phpstan`, `phpmd`, `phpcs`, `structure`, `templates`, etc.) |
-| `get_rule` | Full details: what the rule detects, what to do instead, severity, documentation link |
-
-### Setup (one command)
-
-```bash
-# Native PHP
-vendor/bin/freya --setup
-
-# Docker (auto-detected)
-docker compose exec web php vendor/oxid-quality-tools/standards/bin/freya --setup
-```
-
-Writes `.mcp.json` to the shop root. Auto-detects Docker environments.
-Restart Claude Code to connect.
-
-### Workflow
-
-1. `list_rules` → see what rules apply to your area
-2. `get_rule` → understand detection pattern + fix suggestion
-3. Write compliant code on the first attempt
-4. `qualitytools:check` → verify
+- **`admin.languageFiles` rule** — description and fix_suggestion now reference
+  the correct path (`views/admin_twig/de/` and `views/admin_twig/en/`) and
+  document all four accepted filename patterns
+- **`--report-dir` / `--coverage-html` relative paths** — relative paths are
+  now resolved relative to the target module directory, not the container's CWD
+- **`admin.unknown` false positives** — the admin menu.xml wiring validator now
+  recognizes list-only and simple admin patterns instead of enforcing the classic
+  three-controller pattern
+- **`phpmd.rawSqlDetection` detection gap** — now also scans class constants for
+  raw SQL keywords (previously only method bodies were inspected)
 
 ---
 
-## ⚠️ Quality Tools v2.0.0 — BREAKING: Architecture Rebuild
+<details>
+<summary><b>Previous: v2.1.0 — Freya MCP Server (March 2026)</b></summary>
 
-> `b-7.4.x` &bull; 10 March 2026 &bull; **BREAKING CHANGE**
+AI agents can now **browse the full quality rule catalog before writing code**
+via **Freya**, a read-only MCP server. Two tools: `list_rules` (browse/filter)
+and `get_rule` (full detail with fix suggestions). `--setup` auto-detects Docker.
 
-> [!CAUTION]
-> **v2.0 is a complete internal rebuild.** All v1.4.x CLI options and detection
-> rules are preserved, but the internal architecture is new. If you depend on
-> internal classes (parsers, output generators, rule classes), your code **will
-> break**. The previous v1.4.x codebase is archived on branch `b-7.4.x-v1.4`.
+</details>
 
-### What breaks
+<details>
+<summary><b>Previous: v2.0.0 — Architecture Rebuild (March 2026)</b></summary>
 
-```
- REMOVED CLASS                          REPLACEMENT
- ──────────────────────────────────────────────────────────────────────────
- AiOutputGenerator                      AiConsolePlugin (OutputPluginInterface)
- OutputPresenter                        HumanConsolePlugin (OutputPluginInterface)
- OutputHelper / OutputHelperInterface    Output plugins handle this internally
- AiActionBuilder / AiActionBuilderInterface    Removed — no longer needed
- 14 individual PHPStan rule classes      6 generic ConfigDriven*Rule classes
- 8 individual PHPMD rule classes         1 generic ConfigDrivenPhpMdRule class
- 2 individual PHPCS sniff classes        2 generic ConfigDriven*Sniff classes
-```
+**BREAKING:** Complete internal rebuild. Data-driven rule engine (`config/rules.php`),
+crash diagnostics, output plugin architecture, Check/Result pattern. All CLI options
+and 24 detection rules preserved. See
+[CHANGELOG](https://github.com/OXID-eSales/quality-tools-module/blob/b-7.4.x/CHANGELOG.md).
 
-### What stays the same
-
-- All CLI options (`--phpstan`, `--phpmd`, `--phpcs`, `--test`, `--coverage`, etc.)
-- All 24 detection rules (same violations, same rule IDs, same fix suggestions)
-- TOON output format (`--caller=ai`)
-- Report formats (HTML, JSON, Markdown)
-- Exit codes and quality gate thresholds
-
-### What's new
-
-```
- FEATURE                         DESCRIPTION
- ──────────────────────────────────────────────────────────────────────────
- Data-driven rule engine          All rules defined in config/rules.php —
-                                  add a rule = one config entry, zero PHP
- Crash diagnostics                Actionable PHPUnit crash messages instead
-                                  of generic "PHPUnit crashed" (5 patterns)
- Output plugin architecture       5 plugins: Human, AI, HTML, JSON, Markdown
- Check/Result pattern             Typed results per check, QualityOrchestrator
- --test-structure flag             Independent exclusive purpose flag
-```
-
-### Migration
-
-If you only use the CLI (`qualitytools:check`), **no changes needed**.
-
-If you import internal classes, check the
-[CHANGELOG](https://github.com/OXID-eSales/quality-tools-module/blob/b-7.4.x/CHANGELOG.md)
-for the full list of removed and replaced classes.
-
-**Archived branch:** `b-7.4.x-v1.4` preserves the v1.4.x codebase for reference.
-
----
+</details>
 
 <details>
 <summary><b>Previous: v1.4.1 — Bug Fixes & Output Parity (March 2026)</b></summary>
