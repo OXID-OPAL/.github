@@ -4,35 +4,58 @@ Internal tools and modules for OXID eSales development.
 
 ---
 
+## 🔮 Quality Tools — Freya MCP Server
+
+> Available since v2.1.0 &bull; `b-7.4.x`
+
+AI agents can now **browse the full quality rule catalog before writing code**,
+eliminating trial-and-error cycles with the quality gate.
+
+### Freya — Rule Browsing for AI Agents
+
+**Freya** is a read-only [MCP](https://modelcontextprotocol.io/) server that
+exposes all quality rules over JSON-RPC 2.0 stdio transport. Two tools:
+
+| Tool | Description |
+|------|-------------|
+| `list_rules` | Browse all rules with ID, severity, title. Filter by tool (`phpstan`, `phpmd`, `phpcs`, `structure`, `templates`, etc.) |
+| `get_rule` | Full details: what the rule detects, what to do instead, severity, documentation link |
+
+### Setup (one command)
+
+```bash
+# Native PHP
+vendor/bin/freya --setup
+
+# Docker (auto-detected)
+docker compose exec web php vendor/oxid-quality-tools/standards/bin/freya --setup
+```
+
+Writes `.mcp.json` to the shop root. Auto-detects Docker environments.
+Restart Claude Code to connect.
+
+### Workflow
+
+1. `list_rules` → see what rules apply to your area
+2. `get_rule` → understand detection pattern + fix suggestion
+3. Write compliant code on the first attempt
+4. `qualitytools:check` → verify
+
+---
+
 ## 🩹 Quality Tools v2.1.1 — Bugfixes
 
 > `b-7.4.x` &bull; 16 March 2026
 
-Four corrections to rule definitions, path resolution, and detection coverage.
-
-### Fixed
-
 - **`admin.languageFiles` rule** — description and fix_suggestion now reference
-  the correct path (`views/admin_twig/de/` and `views/admin_twig/en/`) and
-  document all four accepted filename patterns
-- **`--report-dir` / `--coverage-html` relative paths** — relative paths are
-  now resolved relative to the target module directory, not the container's CWD
-- **`admin.unknown` false positives** — the admin menu.xml wiring validator now
-  recognizes list-only and simple admin patterns instead of enforcing the classic
-  three-controller pattern
-- **`phpmd.rawSqlDetection` detection gap** — now also scans class constants for
-  raw SQL keywords (previously only method bodies were inspected)
+  the correct path (`views/admin_twig/de/` and `views/admin_twig/en/`)
+- **`--report-dir` / `--coverage-html` relative paths** — resolved relative to
+  the target module directory, not the container's CWD
+- **`admin.unknown` false positives** — recognizes list-only and simple admin
+  patterns instead of enforcing the three-controller pattern
+- **`phpmd.rawSqlDetection` detection gap** — now also scans class constants
 
 ---
-
-<details>
-<summary><b>Previous: v2.1.0 — Freya MCP Server (March 2026)</b></summary>
-
-AI agents can now **browse the full quality rule catalog before writing code**
-via **Freya**, a read-only MCP server. Two tools: `list_rules` (browse/filter)
-and `get_rule` (full detail with fix suggestions). `--setup` auto-detects Docker.
-
-</details>
 
 <details>
 <summary><b>Previous: v2.0.0 — Architecture Rebuild (March 2026)</b></summary>
