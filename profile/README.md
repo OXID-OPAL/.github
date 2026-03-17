@@ -43,19 +43,35 @@ Restart Claude Code to connect.
 
 ---
 
+## 🚀 Quality Tools v2.2.0 — Auto-Bootstrap
+
+> `b-7.4.x` &bull; 17 March 2026
+
+Modules without a `bootstrap` attribute in their `phpunit.xml` now get the OXID
+shop bootstrap (`source/bootstrap.php`) injected automatically when running tests
+or coverage through quality tools. Modules with their own bootstrap are unaffected.
+
+---
+
 ## 🩹 Quality Tools v2.1.1 — Bugfixes
 
 > `b-7.4.x` &bull; 16 March 2026
 
-- **`admin.languageFiles` rule** — description and fix_suggestion now reference
-  the correct path (`views/admin_twig/de/` and `views/admin_twig/en/`)
-- **`--report-dir` / `--coverage-html` relative paths** — resolved relative to
-  the target module directory, not the container's CWD
-- **`admin.unknown` false positives** — recognizes list-only and simple admin
-  patterns instead of enforcing the three-controller pattern
-- **`phpmd.rawSqlDetection` detection gap** — now also scans class constants
+- **`admin.languageFiles` rule** — correct path and filename patterns in docs
+- **`--report-dir` / `--coverage-html`** — relative paths resolve to target module
+- **`admin.unknown`** — recognizes list-only and simple admin patterns
+- **`phpmd.rawSqlDetection`** — now scans class constants
 
 ---
+
+<details>
+<summary><b>Previous: v2.1.0 — Freya MCP Server (March 2026)</b></summary>
+
+AI agents can now **browse the full quality rule catalog before writing code**
+via **Freya**, a read-only MCP server. Two tools: `list_rules` (browse/filter)
+and `get_rule` (full detail with fix suggestions). `--setup` auto-detects Docker.
+
+</details>
 
 <details>
 <summary><b>Previous: v2.0.0 — Architecture Rebuild (March 2026)</b></summary>
