@@ -21,18 +21,22 @@ exposes all quality rules over JSON-RPC 2.0 stdio transport. Two tools:
 | `list_rules` | Browse all rules with ID, severity, title. Filter by tool (`phpstan`, `phpmd`, `phpcs`, `structure`, `templates`, etc.) |
 | `get_rule` | Full details: what the rule detects, what to do instead, severity, documentation link |
 
-### Setup (one command)
+### Setup (one command, run on host)
 
 ```bash
-# Native PHP
+# From the shop root
 vendor/bin/freya --setup
 
-# Docker (auto-detected)
-docker compose exec web php vendor/oxid-quality-tools/standards/bin/freya --setup
+# Or from the module directory
+php project-modules/oxid-quality-tools/bin/freya --setup
 ```
 
-Writes `.mcp.json` to the shop root. Auto-detects Docker environments.
-Restart Claude Code to connect.
+Writes `.mcp.json` to the shop root. Auto-detects Docker environments and
+computes the correct container binary path. Restart Claude Code to connect.
+
+> **v1.1.0:** Running `--setup` inside Docker now errors with instructions
+> instead of writing a broken config. Connection resilience improved (SIGPIPE
+> handling, graceful shutdown logging).
 
 ### Workflow
 
@@ -42,6 +46,18 @@ Restart Claude Code to connect.
 4. `qualitytools:check` → verify
 
 ---
+
+## 🩹 Quality Tools v2.2.1 — Detection & Resilience Fixes
+
+> `b-7.4.x` &bull; 17 March 2026
+
+- **SQL detection broadened** — catches qualified names, function calls, aggregates,
+  CASE WHEN, and raw SQL fragments passed to QueryBuilder methods. All patterns
+  data-driven via `rules.php`.
+- **Freya v1.1.0** — Docker-safe `--setup`, dynamic container paths, connection resilience
+- **Method prefix** — fixed garbled messages, added position validation (start / after verb)
+- **PHPStan baseline eliminated** — autoloader in `phpstan.neon` resolved all 101
+  Symfony/OXID class-not-found entries
 
 ## 🚀 Quality Tools v2.2.0 — Auto-Bootstrap
 
@@ -53,14 +69,15 @@ or coverage through quality tools. Modules with their own bootstrap are unaffect
 
 ---
 
-## 🩹 Quality Tools v2.1.1 — Bugfixes
-
-> `b-7.4.x` &bull; 16 March 2026
+<details>
+<summary><b>Previous: v2.1.1 — Bugfixes (March 2026)</b></summary>
 
 - **`admin.languageFiles` rule** — correct path and filename patterns in docs
 - **`--report-dir` / `--coverage-html`** — relative paths resolve to target module
 - **`admin.unknown`** — recognizes list-only and simple admin patterns
 - **`phpmd.rawSqlDetection`** — now scans class constants
+
+</details>
 
 ---
 
