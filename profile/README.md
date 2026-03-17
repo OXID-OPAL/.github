@@ -21,6 +21,8 @@ Two tools:
 |------|-------------|
 | `list_rules` | Browse all rules with ID, severity, title. Filter by tool (`phpstan`, `phpmd`, `phpcs`, `structure`, `templates`, etc.) |
 | `get_rule` | Full details: what the rule detects, what to do instead, severity, documentation link |
+| `list_sections` | Browse AI-RULES.md sections with "read when" triggers — call at session start |
+| `get_section` | Load a specific workflow section (TDD, retrofitting, evidence rules, etc.) |
 
 ### Setup (one command)
 
@@ -33,7 +35,7 @@ Writes `.mcp.json` to the shop root with a `streamable-http` entry pointing to
 `docker-compose.yml`. Restart Claude Code to connect.
 
 > **v2.0:** Freya runs as an OXID frontend controller — no separate process,
-> no Docker path issues, no stdio pipe crashes. Legacy `--setup --stdio` preserved.
+> no Docker path issues, no stdio pipe crashes. Stdio transport deprecated.
 
 ### Workflow
 
@@ -50,10 +52,11 @@ Writes `.mcp.json` to the shop root with a `streamable-http` entry pointing to
 
 - **Freya v2.0** — runs as OXID frontend controller over HTTP instead of fragile
   stdio process. No Docker path resolution, no pipe crashes.
-- **FreyaDispatcher service** — stateless JSON-RPC dispatcher backed by RuleRegistry
+- **`list_sections` / `get_section`** — AI-RULES.md served through Freya with
+  section markers and "read when" triggers. Agents load workflows on demand.
 - **MCP `instructions` field** — agents get Freya's self-description in system prompt
-- **`--setup` defaults to HTTP** — port auto-detected, `--setup --stdio` as fallback
-- 18 new unit tests
+- **`--setup` defaults to HTTP** — port auto-detected. Stdio transport deprecated.
+- 25 new unit tests
 
 ## 🩹 Quality Tools v2.2.1 — Detection & Resilience Fixes
 
