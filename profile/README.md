@@ -6,7 +6,7 @@ Internal tools and modules for OXID eSales development.
 
 ## 🔮 Quality Tools — Freya MCP Server
 
-> Available since v2.1.0 &bull; `b-7.4.x`
+> Available since v2.1.0, **HTTP transport since v2.0** &bull; `b-7.4.x`
 
 AI agents can now **browse the full quality rule catalog before writing code**,
 eliminating trial-and-error cycles with the quality gate.
@@ -14,29 +14,26 @@ eliminating trial-and-error cycles with the quality gate.
 ### Freya — Rule Browsing for AI Agents
 
 **Freya** is a read-only [MCP](https://modelcontextprotocol.io/) server that
-exposes all quality rules over JSON-RPC 2.0 stdio transport. Two tools:
+exposes all quality rules over HTTP (JSON-RPC 2.0 via OXID frontend controller).
+Two tools:
 
 | Tool | Description |
 |------|-------------|
 | `list_rules` | Browse all rules with ID, severity, title. Filter by tool (`phpstan`, `phpmd`, `phpcs`, `structure`, `templates`, etc.) |
 | `get_rule` | Full details: what the rule detects, what to do instead, severity, documentation link |
 
-### Setup (one command, run on host)
+### Setup (one command)
 
 ```bash
-# From the shop root
 vendor/bin/freya --setup
-
-# Or from the module directory
-php project-modules/oxid-quality-tools/bin/freya --setup
 ```
 
-Writes `.mcp.json` to the shop root. Auto-detects Docker environments and
-computes the correct container binary path. Restart Claude Code to connect.
+Writes `.mcp.json` to the shop root with a `streamable-http` entry pointing to
+`http://localhost:<port>/index.php?cl=freya_mcp`. Port auto-detected from
+`docker-compose.yml`. Restart Claude Code to connect.
 
-> **v1.1.0:** Running `--setup` inside Docker now errors with instructions
-> instead of writing a broken config. Connection resilience improved (SIGPIPE
-> handling, graceful shutdown logging).
+> **v2.0:** Freya runs as an OXID frontend controller — no separate process,
+> no Docker path issues, no stdio pipe crashes. Legacy `--setup --stdio` preserved.
 
 ### Workflow
 
@@ -46,6 +43,17 @@ computes the correct container binary path. Restart Claude Code to connect.
 4. `qualitytools:check` → verify
 
 ---
+
+## 🔮 Quality Tools v2.2.2 — Freya v2.0 HTTP Transport
+
+> `b-7.4.x` &bull; 17 March 2026
+
+- **Freya v2.0** — runs as OXID frontend controller over HTTP instead of fragile
+  stdio process. No Docker path resolution, no pipe crashes.
+- **FreyaDispatcher service** — stateless JSON-RPC dispatcher backed by RuleRegistry
+- **MCP `instructions` field** — agents get Freya's self-description in system prompt
+- **`--setup` defaults to HTTP** — port auto-detected, `--setup --stdio` as fallback
+- 18 new unit tests
 
 ## 🩹 Quality Tools v2.2.1 — Detection & Resilience Fixes
 
@@ -96,7 +104,7 @@ and `get_rule` (full detail with fix suggestions). `--setup` auto-detects Docker
 **BREAKING:** Complete internal rebuild. Data-driven rule engine (`config/rules.php`),
 crash diagnostics, output plugin architecture, Check/Result pattern. All CLI options
 and 24 detection rules preserved. See
-[CHANGELOG](https://github.com/OXID-eSales/quality-tools-module/blob/b-7.4.x/CHANGELOG.md).
+[CHANGELOG](https://github.com/OXID-eSales/oxid-quality-tools/blob/b-7.4.x/CHANGELOG.md).
 
 </details>
 
@@ -146,10 +154,10 @@ and 24 detection rules preserved. See
 
 </details>
 
-See [quality-tools-module](https://github.com/OXID-eSales/quality-tools-module) for full changelog and source.
+See [oxid-quality-tools](https://github.com/OXID-eSales/oxid-quality-tools) for full changelog and source.
 
 ---
 
 ## Repositories
 
-- **quality-tools-module** — Unified quality checking for OXID modules (PHPStan, PHPMD, PHPCS, PHPUnit, coverage)
+- **oxid-quality-tools** — Unified quality checking for OXID modules (PHPStan, PHPMD, PHPCS, PHPUnit, coverage)
