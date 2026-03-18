@@ -46,6 +46,20 @@ Writes `.mcp.json` to the shop root with a `streamable-http` entry pointing to
 
 ---
 
+## 🩹 Quality Tools v2.2.3 — SQL Detection Fixes
+
+> `b-7.4.x` &bull; 18 March 2026
+
+- **Concatenated constants detected** — multi-line `const Q = '...' . '...'` now
+  has all fragments joined before SQL keyword matching. Previously only the first
+  fragment was inspected.
+- **ExpressionBuilder false positives fixed** — `$expr->or()`, `$expr->eq()` passed
+  to QueryBuilder methods no longer trigger the interpolated-SQL pattern. Possessive
+  quantifier `\w++(?!->)` distinguishes object calls from string interpolation.
+- **`const_pattern` is now data** — constant extraction regex moved from hardcoded
+  PHP into `rules.php`, consistent with all other detection patterns.
+- **Mixed-quote constants** — `"CASE WHEN col = 'val'"` now parses correctly.
+
 ## 🔮 Quality Tools v2.2.2 — Freya v2.0 HTTP Transport
 
 > `b-7.4.x` &bull; 17 March 2026
