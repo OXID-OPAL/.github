@@ -2,6 +2,8 @@
 
 Internal tools and modules for OXID eSales development.
 
+**[OPAL Processes](../OPAL_PROCESSES.md)** — Module lifecycle from ticket to release: naming conventions, Jira workflow, AQUA reports, quality gates, GitHub setup, usage tracking.
+
 ---
 
 ## 🔮 Quality Tools — Freya MCP Server
