@@ -550,7 +550,7 @@ Using `--caller=ai` produces output in TOON format (compact, ~30-60% fewer token
 
 ## 8. Quality Tools Improvement Suggestions
 
-When encountering things that `qualitytools` should detect or report better, write them to a designated file (e.g. `~/Desktop/QUALITYTOOLS.md`). Be precise, separate concerns clearly — each suggestion should be its own entry.
+When encountering things that `qualitytools` should detect or report better, file them as GitHub issues on the [oxid-quality-tools](https://github.com/OXID-eSales/oxid-quality-tools) repository. Be precise, separate concerns clearly — each suggestion should be its own issue.
 
 ---
 
