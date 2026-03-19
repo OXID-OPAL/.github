@@ -48,9 +48,29 @@ Writes `.mcp.json` to the shop root with a `streamable-http` entry pointing to
 
 ---
 
-## 🩹 Quality Tools v2.2.4 — Suppression Detection & OXID Certification Thresholds
+## 🚀 Quality Tools v2.3.0 — 16 OXID Certification Rules, Data-Driven Engines
 
 > `b-7.4.x` &bull; 19 March 2026
+
+- **16 new OXID certification rules** — template conventions, asset structure,
+  metadata validation, block naming, global functions, cross-context inheritance.
+  All defined as DATA in `config/rules.php` — no per-rule code
+- **Pattern engine: path filtering** — `path_contains` / `path_excludes` let
+  template rules target specific directories (e.g. only theme overrides)
+- **Pattern engine: absence detection** — `must_contain` fires when a required
+  pattern is missing (e.g. `{% extends %}` in theme overrides)
+- **Structure engine: asset validation** — data-driven naming (`[module_id]_*`)
+  and directory placement rules from `module-structure-standards.php`
+- **Structure engine: metadata cross-checks** — block name prefix validation
+  against module ID, metadata version check via pattern scope
+- **Rule cross-listing** — `also_listed_under` lets a rule appear in multiple
+  Freya tool filters (e.g. PHPMD rule also listed under `structure`)
+- **AI-RULES v3.3** — Test Semantics section: unit vs integration test rules
+
+---
+
+<details>
+<summary><b>Previous: v2.2.4 — Suppression Detection & OXID Certification (March 2026)</b></summary>
 
 - **Suppression reporting restored** — `@codeCoverageIgnore`, `@SuppressWarnings`,
   `phpcs:ignore`, `@phpstan-ignore` visible in TOON output again (v2.0 regression)
@@ -64,53 +84,35 @@ Writes `.mcp.json` to the shop root with a `streamable-http` entry pointing to
 - **13 classes decomposed** to meet WMC threshold — 28 new focused helper classes
 - **All standard PHPMD rules in `rules.php`** — Freya can now expose all thresholds
 
----
+</details>
 
-## 🩹 Quality Tools v2.2.3 — SQL Detection Fixes
+<details>
+<summary><b>Previous: v2.2.3 — SQL Detection Fixes (March 2026)</b></summary>
 
-> `b-7.4.x` &bull; 18 March 2026
+- Concatenated constants, ExpressionBuilder false positives, `const_pattern` as data, mixed-quote constants
 
-- **Concatenated constants detected** — multi-line `const Q = '...' . '...'` now
-  has all fragments joined before SQL keyword matching. Previously only the first
-  fragment was inspected.
-- **ExpressionBuilder false positives fixed** — `$expr->or()`, `$expr->eq()` passed
-  to QueryBuilder methods no longer trigger the interpolated-SQL pattern. Possessive
-  quantifier `\w++(?!->)` distinguishes object calls from string interpolation.
-- **`const_pattern` is now data** — constant extraction regex moved from hardcoded
-  PHP into `rules.php`, consistent with all other detection patterns.
-- **Mixed-quote constants** — `"CASE WHEN col = 'val'"` now parses correctly.
+</details>
 
-## 🔮 Quality Tools v2.2.2 — Freya v2.0 HTTP Transport
+<details>
+<summary><b>Previous: v2.2.2 — Freya v2.0 HTTP Transport (March 2026)</b></summary>
 
-> `b-7.4.x` &bull; 17 March 2026
+- Freya runs as OXID frontend controller over HTTP, `list_sections`/`get_section` for AI-RULES.md, `--setup` defaults to HTTP
 
-- **Freya v2.0** — runs as OXID frontend controller over HTTP instead of fragile
-  stdio process. No Docker path resolution, no pipe crashes.
-- **`list_sections` / `get_section`** — AI-RULES.md served through Freya with
-  section markers and "read when" triggers. Agents load workflows on demand.
-- **MCP `instructions` field** — agents get Freya's self-description in system prompt
-- **`--setup` defaults to HTTP** — port auto-detected. Stdio transport deprecated.
-- 25 new unit tests
+</details>
 
-## 🩹 Quality Tools v2.2.1 — Detection & Resilience Fixes
+<details>
+<summary><b>Previous: v2.2.1 — Detection & Resilience Fixes (March 2026)</b></summary>
 
-> `b-7.4.x` &bull; 17 March 2026
+- SQL detection broadened, Freya v1.1.0 Docker-safe setup, method prefix fixes, PHPStan baseline eliminated
 
-- **SQL detection broadened** — catches qualified names, function calls, aggregates,
-  CASE WHEN, and raw SQL fragments passed to QueryBuilder methods. All patterns
-  data-driven via `rules.php`.
-- **Freya v1.1.0** — Docker-safe `--setup`, dynamic container paths, connection resilience
-- **Method prefix** — fixed garbled messages, added position validation (start / after verb)
-- **PHPStan baseline eliminated** — autoloader in `phpstan.neon` resolved all 101
-  Symfony/OXID class-not-found entries
+</details>
 
-## 🚀 Quality Tools v2.2.0 — Auto-Bootstrap
+<details>
+<summary><b>Previous: v2.2.0 — Auto-Bootstrap (March 2026)</b></summary>
 
-> `b-7.4.x` &bull; 17 March 2026
+- Modules without bootstrap in phpunit.xml get OXID shop bootstrap injected automatically
 
-Modules without a `bootstrap` attribute in their `phpunit.xml` now get the OXID
-shop bootstrap (`source/bootstrap.php`) injected automatically when running tests
-or coverage through quality tools. Modules with their own bootstrap are unaffected.
+</details>
 
 ---
 
