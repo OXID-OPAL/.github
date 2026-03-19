@@ -46,6 +46,24 @@ Writes `.mcp.json` to the shop root with a `streamable-http` entry pointing to
 
 ---
 
+## 🩹 Quality Tools v2.2.4 — Suppression Detection & OXID Certification Thresholds
+
+> `b-7.4.x` &bull; 19 March 2026
+
+- **Suppression reporting restored** — `@codeCoverageIgnore`, `@SuppressWarnings`,
+  `phpcs:ignore`, `@phpstan-ignore` visible in TOON output again (v2.0 regression)
+- **Class-level suppressions are now errors** — `@codeCoverageIgnore` always error;
+  other class-level annotations promoted via `class_level_severity` rule attribute
+- **DTO-aware PHPMD rules** — `ExcessiveParameterList` and `BooleanArgumentFlag`
+  auto-exempt DTO constructors with promoted properties (configurable heuristic)
+- **OXID certification thresholds** — CC two-tier (warning ≥4, error ≥8),
+  method length 80, NPath <200, CRAP <30 — from official OXID certification docs
+- **ExcessiveClassComplexity enabled** — WMC>50 (was excluded since v1.0)
+- **13 classes decomposed** to meet WMC threshold — 28 new focused helper classes
+- **All standard PHPMD rules in `rules.php`** — Freya can now expose all thresholds
+
+---
+
 ## 🩹 Quality Tools v2.2.3 — SQL Detection Fixes
 
 > `b-7.4.x` &bull; 18 March 2026
