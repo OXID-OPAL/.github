@@ -48,6 +48,15 @@ Writes `.mcp.json` to the shop root with a `streamable-http` entry pointing to
 
 ---
 
+## 🩹 Quality Tools v2.3.1 — Template Pattern Rule Fix
+
+> `b-7.4.x` &bull; 20 March 2026
+
+- **False positive eliminated** — `template.missingThemeParent` no longer flags theme
+  override templates that already contain `{% extends %}`. TemplateAnalyzer now delegates
+  to PatternRuleEvaluator, correctly handling path filters and absence rules.
+- Verified across 8 OPAL modules (15 false positives removed)
+
 ## 🚀 Quality Tools v2.3.0 — 16 OXID Certification Rules, Data-Driven Engines
 
 > `b-7.4.x` &bull; 19 March 2026
