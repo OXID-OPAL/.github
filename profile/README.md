@@ -48,35 +48,47 @@ Writes `.mcp.json` to the shop root with a `streamable-http` entry pointing to
 
 ---
 
-## 🩹 Quality Tools v2.3.1 — Template Pattern Rule Fix
+## 🧩 Quality Tools v2.4.0 — Module Settings Translation Rules
 
-> `b-7.4.x` &bull; 20 March 2026
+> `b-7.4.x` &bull; 27 March 2026
+
+- **3 new settings translation rules** — all DATA in `config/rules.php`,
+  detected by new `ModuleSettingsValidator` engine:
+  - `structure.missingModuleOptionsFile` (error) — metadata.php has settings
+    but `module_options.php` missing in de/en
+  - `structure.missingModuleOptionsKeys` (warning) — missing `SHOP_MODULE_*`,
+    `SHOP_MODULE_GROUP_*`, or select option `SHOP_MODULE_{name}_{value}` keys
+  - `structure.settingsLangInWrongFile` (warning) — `SHOP_MODULE_*` keys in
+    module lang files instead of module_options.php (wrong loading behavior)
+- **Select constraint validation** — `type=select` settings with pipe-delimited
+  constraints get each option value checked for its translation key
+- **`structure.blockNaming` false positive fixed** — `block` field in metadata
+  blocks[] references theme blocks modules cannot rename
+- **`template.rawAssetInclusion` fix_suggestion enhanced** — documents admin
+  two-phase `style()` collect/render pattern
+
+<details>
+<summary><b>Previous: v2.3.1 — Template Pattern Rule Fix (March 2026)</b></summary>
 
 - **False positive eliminated** — `template.missingThemeParent` no longer flags theme
   override templates that already contain `{% extends %}`. TemplateAnalyzer now delegates
   to PatternRuleEvaluator, correctly handling path filters and absence rules.
 - Verified across 8 OPAL modules (15 false positives removed)
 
-## 🚀 Quality Tools v2.3.0 — 16 OXID Certification Rules, Data-Driven Engines
+</details>
 
-> `b-7.4.x` &bull; 19 March 2026
+<details>
+<summary><b>Previous: v2.3.0 — 16 OXID Certification Rules (March 2026)</b></summary>
 
 - **16 new OXID certification rules** — template conventions, asset structure,
   metadata validation, block naming, global functions, cross-context inheritance.
   All defined as DATA in `config/rules.php` — no per-rule code
-- **Pattern engine: path filtering** — `path_contains` / `path_excludes` let
-  template rules target specific directories (e.g. only theme overrides)
-- **Pattern engine: absence detection** — `must_contain` fires when a required
-  pattern is missing (e.g. `{% extends %}` in theme overrides)
-- **Structure engine: asset validation** — data-driven naming (`[module_id]_*`)
-  and directory placement rules from `module-structure-standards.php`
-- **Structure engine: metadata cross-checks** — block name prefix validation
-  against module ID, metadata version check via pattern scope
-- **Rule cross-listing** — `also_listed_under` lets a rule appear in multiple
-  Freya tool filters (e.g. PHPMD rule also listed under `structure`)
+- **Pattern engine: path filtering, absence detection, metadata scope**
+- **Structure engine: asset validation, metadata cross-checks**
+- **Rule cross-listing** — `also_listed_under` for multiple Freya tool filters
 - **AI-RULES v3.3** — Test Semantics section: unit vs integration test rules
 
----
+</details>
 
 <details>
 <summary><b>Previous: v2.2.4 — Suppression Detection & OXID Certification (March 2026)</b></summary>
