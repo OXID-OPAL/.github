@@ -48,9 +48,43 @@ Writes `.mcp.json` to the shop root with a `streamable-http` entry pointing to
 
 ---
 
-## 🧩 Quality Tools v2.4.0 — Module Settings Translation Rules
+## 🧩 Quality Tools v2.5.0 — New Rules, False-Positive Fixes, Security Hardening
 
-> `b-7.4.x` &bull; 27 March 2026
+> `b-7.4.x` &bull; 2 April 2026
+
+### New Rules (all DATA in `config/rules.php`)
+- `template.extendsPathMismatch` (error) — file path / extends path divergence
+  in theme overrides (silent override failure)
+- `template.incExtendedFromParentLevel` (error) — top-level template extends
+  inc-template, breaking widget chain (SystemComponentException)
+- `structure.tableNamingConvention` (warning) — migration CREATE TABLE without
+  module ID prefix
+- `phpstan.extensionOverrideTypeHint` (error) — type hints added to parent
+  method overrides (LSP violations)
+
+### False-Positive Fixes
+- `phpmd.dtoAwareBooleanFlag` — parent method overrides now exempt
+- `phpmd.extensionMethodPrefix` — use-imported class names in metadata.php resolved
+- `phpstan.serviceInExtension` — counts body lines only, not multi-line signatures
+- `testStructure.infrastructureInUnit` — `Registry::set()` mock injection exempt
+- `testStructure.bootstrapHardcodedPath` — `__DIR__`-based paths exempt
+
+### Security
+- **FileLoaderController** moved from public frontend to admin-only (requires session)
+- CORS wildcard removed, error responses sanitized (no path/exception leakage)
+- Reports use relative paths only in JSON/markdown exports
+- Controller rejects absolute paths and path traversal at input level
+
+### Hint Improvements
+- `template.smartyArtifact` — documents HTML array + Twig collision workarounds
+- `template.inlineStyle` — email templates exempt (inline styles required)
+- `phpstan.registryInExtensions` — recommends service extraction pattern
+
+### Stats
+- 108 rules, 2427 tests, 80.71% coverage, 0 violations
+
+<details>
+<summary><b>Previous: v2.4.0 — Module Settings Translation Rules (March 2026)</b></summary>
 
 - **3 new settings translation rules** — all DATA in `config/rules.php`,
   detected by new `ModuleSettingsValidator` engine:
@@ -66,6 +100,8 @@ Writes `.mcp.json` to the shop root with a `streamable-http` entry pointing to
   blocks[] references theme blocks modules cannot rename
 - **`template.rawAssetInclusion` fix_suggestion enhanced** — documents admin
   two-phase `style()` collect/render pattern
+
+</details>
 
 <details>
 <summary><b>Previous: v2.3.1 — Template Pattern Rule Fix (March 2026)</b></summary>
