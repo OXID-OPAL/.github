@@ -48,40 +48,68 @@ Writes `.mcp.json` to the shop root with a `streamable-http` entry pointing to
 
 ---
 
-## 🧩 Quality Tools v2.5.0 — New Rules, False-Positive Fixes, Security Hardening
+## 🧩 Quality Tools v2.6.0 — Smarter Rules, Less Friction
 
-> `b-7.4.x` &bull; 2 April 2026
+> `b-7.4.x` &bull; 28 April 2026
 
 ### New Rules (all DATA in `config/rules.php`)
-- `template.extendsPathMismatch` (error) — file path / extends path divergence
-  in theme overrides (silent override failure)
-- `template.incExtendedFromParentLevel` (error) — top-level template extends
-  inc-template, breaking widget chain (SystemComponentException)
-- `structure.tableNamingConvention` (warning) — migration CREATE TABLE without
-  module ID prefix
-- `phpstan.extensionOverrideTypeHint` (error) — type hints added to parent
-  method overrides (LSP violations)
+- `structure.legacySmartyTemplatesArray` (warning) — non-empty `'templates' => […]`
+  in metadata.php. Under Twig the `@moduleid/` namespace auto-registers; the array
+  is dead Smarty-era config that can mask runtime path mismatches
+- `structure.missingTemplateFile` (error) — admin controller references a
+  template that does not exist on disk. Detects from `$_sThisTemplate` and
+  literal `return '@module-id/template';` statements in `render()` methods.
+  Catches the blank-page class of bugs that previously left the gate green
+- `tests.runnerDeprecations` (warning) — surfaces PHPUnit's runner-level
+  deprecation count (`PHPUnit Deprecations: N`). Doc-comment metadata
+  (`/** @test */`, `/** @covers */`) that will hard-fail in PHPUnit 12 is
+  now visible at gate-time
+- `i18n.hardcodedUserFacingString` (warning) — natural-language strings
+  (HTML markup, sentence-shaped literals) in module `src/` PHP code that
+  should go through `Registry::getLang()->translateString()`. Heuristic-based;
+  tune via `exclude_line_patterns` in `config/rules.php`
 
-### False-Positive Fixes
-- `phpmd.dtoAwareBooleanFlag` — parent method overrides now exempt
-- `phpmd.extensionMethodPrefix` — use-imported class names in metadata.php resolved
-- `phpstan.serviceInExtension` — counts body lines only, not multi-line signatures
-- `testStructure.infrastructureInUnit` — `Registry::set()` mock injection exempt
-- `testStructure.bootstrapHardcodedPath` — `__DIR__`-based paths exempt
+### Smarter Existing Rules
+- `phpstan.interfaceInjection` — value-shaped types auto-exempt via class-name
+  suffix (`Dto`, `DTO`, `Vo`, `VO`, `ValueObject`). Same convention pattern as
+  `phpstan.exceptionInheritance`. Resolves false positive on typed VOs in
+  Symfony Event payloads (OXID-eSales/oxid-quality-tools#9)
+- `template.rawAssetInclusion` — admin templates (`views/twig/admin/`) exempt;
+  OXID's `twig-admin-theme` uses raw `<script>` / `<link>` by convention,
+  the helpers are a storefront aggregation pattern
 
-### Security
-- **FileLoaderController** moved from public frontend to admin-only (requires session)
-- CORS wildcard removed, error responses sanitized (no path/exception leakage)
-- Reports use relative paths only in JSON/markdown exports
-- Controller rejects absolute paths and path traversal at input level
-
-### Hint Improvements
-- `template.smartyArtifact` — documents HTML array + Twig collision workarounds
-- `template.inlineStyle` — email templates exempt (inline styles required)
-- `phpstan.registryInExtensions` — recommends service extraction pattern
+### Architecture
+- **3 new generic engines** — `tests_output` (line-pattern scanner over PHPUnit
+  process output), `admin_template_resolve` (reference extraction + path resolve),
+  `php_source` (recursive PHP-file scanner with line-level exclusions)
+- **`I18nCheck`** tagged as default-on `qualitytools.check`; warning-only so
+  the gate never fails just because of i18n findings
+- All detection patterns and exclusions live in `config/rules.php` as data —
+  engine code stays generic, future rules of any of these shapes need
+  zero PHP changes
 
 ### Stats
-- 108 rules, 2427 tests, 80.71% coverage, 0 violations
+- 113 rules, 2526 tests, 80.76% coverage, 0 violations
+- Validation sweep across 6 OPAL modules pre-release caught 2 hotfix bugs
+
+<details>
+<summary><b>Previous: v2.5.0 — New Rules, False-Positive Fixes, Security Hardening (April 2026)</b></summary>
+
+**New rules (all DATA):** `template.extendsPathMismatch` (error),
+`template.incExtendedFromParentLevel` (error), `structure.tableNamingConvention`
+(warning), `phpstan.extensionOverrideTypeHint` (error)
+
+**False-positive fixes:** `phpmd.dtoAwareBooleanFlag`,
+`phpmd.extensionMethodPrefix`, `phpstan.serviceInExtension`,
+`testStructure.infrastructureInUnit`, `testStructure.bootstrapHardcodedPath`
+
+**Security:** FileLoaderController moved to admin-only, CORS wildcard removed,
+error responses sanitized, reports use relative paths, path traversal blocked
+at input level
+
+**Stats:** 108 rules, 2427 tests, 80.71% coverage, 0 violations
+
+</details>
 
 <details>
 <summary><b>Previous: v2.4.0 — Module Settings Translation Rules (March 2026)</b></summary>
