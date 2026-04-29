@@ -48,49 +48,81 @@ Writes `.mcp.json` to the shop root with a `streamable-http` entry pointing to
 
 ---
 
-## 🧩 Quality Tools v2.6.0 — Smarter Rules, Less Friction
+## 🧩 Quality Tools v2.7.0 — Theme-Override Intelligence + Freya API Refresh
 
-> `b-7.4.x` &bull; 28 April 2026
+> `b-7.4.x` &bull; 29 April 2026
 
-### New Rules (all DATA in `config/rules.php`)
-- `structure.legacySmartyTemplatesArray` (warning) — non-empty `'templates' => […]`
-  in metadata.php. Under Twig the `@moduleid/` namespace auto-registers; the array
-  is dead Smarty-era config that can mask runtime path mismatches
-- `structure.missingTemplateFile` (error) — admin controller references a
-  template that does not exist on disk. Detects from `$_sThisTemplate` and
-  literal `return '@module-id/template';` statements in `render()` methods.
-  Catches the blank-page class of bugs that previously left the gate green
-- `tests.runnerDeprecations` (warning) — surfaces PHPUnit's runner-level
-  deprecation count (`PHPUnit Deprecations: N`). Doc-comment metadata
-  (`/** @test */`, `/** @covers */`) that will hard-fail in PHPUnit 12 is
-  now visible at gate-time
-- `i18n.hardcodedUserFacingString` (warning) — natural-language strings
-  (HTML markup, sentence-shaped literals) in module `src/` PHP code that
-  should go through `Registry::getLang()->translateString()`. Heuristic-based;
-  tune via `exclude_line_patterns` in `config/rules.php`
+### New Theme-Override Rules (all DATA in `config/rules.php`)
+- `template.unknownBlockOverride` (error) — overrides defining `{% block X %}`
+  with names absent in the parent theme template AND every other active
+  module's override at the same path. Catches typos and AI-hallucinated block
+  names that would silent-no-op at runtime. Multi-module catalog aggregates
+  blocks from theme source + sibling module overrides; the file under
+  inspection is excluded so it can't self-validate
+- `template.widgetOnlyMethodInControllerContext` (error) — calls to widget-only
+  methods from controller-context theme overrides (top-level path, NOT under
+  `inc/`) crash at runtime with `SystemComponentException`. The catalog of
+  widget-only methods is **discovered statically from OXID-core widget vs
+  controller class files at gate-time** and auto-adapts to upstream changes —
+  35 methods found live, vs an 8-method curated draft. No hardcoded list to
+  drift when core evolves
 
-### Smarter Existing Rules
-- `phpstan.interfaceInjection` — value-shaped types auto-exempt via class-name
-  suffix (`Dto`, `DTO`, `Vo`, `VO`, `ValueObject`). Same convention pattern as
-  `phpstan.exceptionInheritance`. Resolves false positive on typed VOs in
-  Symfony Event payloads (OXID-eSales/oxid-quality-tools#9)
-- `template.rawAssetInclusion` — admin templates (`views/twig/admin/`) exempt;
-  OXID's `twig-admin-theme` uses raw `<script>` / `<link>` by convention,
-  the helpers are a storefront aggregation pattern
+### Smarter Existing Rule Descriptions
+- `template.extendsPathMismatch` description rewritten with the kausal model:
+  theme overrides register against file path, `{% extends %}` controls content
+  source, divergence means file at A renders content extended from B.
+  Concrete `tabs.html.twig` ↔ `footer.html.twig` example
+- `template.incExtendedFromParentLevel` description names representative
+  widget-only methods and references Phase 2 widget-context rendering
+  explicitly so the SystemComponentException trail of causation is concrete
+
+### Freya: `sections` → `workflows` API Refresh
+- MCP tools renamed: `list_sections`/`get_section` → `list_workflows`/
+  `get_workflow`. The IDs themselves (`setup`, `core-rules`, `freya`, …) are
+  unchanged — calls with the legacy `section_id` argument resolve identically
+  through the shim
+- Old tool names remain functional via a thin deprecation wrapper that
+  prepends `Warning: <oldname> is deprecated, use <newname> instead.` to the
+  response. Old names are NOT advertised in `tools/list`; new MCP clients
+  discover only workflow tools
+- AI-RULES.md markers renamed `<!-- section-id: … -->` →
+  `<!-- workflow-id: … -->`
+- **The deprecation wrapper will be removed in a future major version (v3.x)**
+  — every consumer (Steuerungsdateien, scripts, prompts) referencing the old
+  names should migrate proactively
 
 ### Architecture
-- **3 new generic engines** — `tests_output` (line-pattern scanner over PHPUnit
-  process output), `admin_template_resolve` (reference extraction + path resolve),
-  `php_source` (recursive PHP-file scanner with line-level exclusions)
-- **`I18nCheck`** tagged as default-on `qualitytools.check`; warning-only so
-  the gate never fails just because of i18n findings
-- All detection patterns and exclusions live in `config/rules.php` as data —
-  engine code stays generic, future rules of any of these shapes need
-  zero PHP changes
+- **2 new detection engines** — `theme_block_override`
+  (UnknownBlockOverrideDetector) and `controller_context_widget_method`
+  (WidgetOnlyMethodDetector + WidgetMethodCatalog). Both read their config
+  (regex, glob patterns, paths) from `config/rules.php` as data; engine code
+  stays generic
+- **`FileSystemInterface::glob()`** added; mockable wrapper around PHP's
+  `glob()`, foundational for catalog-style detectors
 
 ### Stats
-- 113 rules, 2526 tests, 80.76% coverage, 0 violations
-- Validation sweep across 6 OPAL modules pre-release caught 2 hotfix bugs
+- 115 rules, 2598 tests, 0 violations
+- Catalog-driven coverage: 35 widget-only methods discovered live vs an
+  8-method curated draft
+
+<details>
+<summary><b>Previous: v2.6.0 — Smarter Rules, Less Friction (April 2026)</b></summary>
+
+**New rules (all DATA):** `structure.legacySmartyTemplatesArray` (warning),
+`structure.missingTemplateFile` (error), `tests.runnerDeprecations` (warning),
+`i18n.hardcodedUserFacingString` (warning).
+
+**Smarter existing rules:** `phpstan.interfaceInjection` exempts value-shaped
+types via suffix (`Dto`/`DTO`/`Vo`/`VO`/`ValueObject`); `template.rawAssetInclusion`
+exempts admin templates (raw `<script>`/`<link>` by convention).
+
+**Architecture:** 3 new generic engines (`tests_output`, `admin_template_resolve`,
+`php_source`) + `I18nCheck`. All patterns and exclusions live as data.
+
+**Stats:** 113 rules, 2526 tests, 80.76% coverage, 0 violations. Validation
+sweep across 6 OPAL modules pre-release caught 2 hotfix bugs.
+
+</details>
 
 <details>
 <summary><b>Previous: v2.5.0 — New Rules, False-Positive Fixes, Security Hardening (April 2026)</b></summary>
