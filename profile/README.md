@@ -13,18 +13,22 @@ Internal tools and modules for OXID eSales development.
 AI agents can now **browse the full quality rule catalog before writing code**,
 eliminating trial-and-error cycles with the quality gate.
 
-### Freya — Rule Browsing for AI Agents
+### Freya — Rule & Workflow Browsing for AI Agents
 
 **Freya** is a read-only [MCP](https://modelcontextprotocol.io/) server that
-exposes all quality rules over HTTP (JSON-RPC 2.0 via OXID frontend controller).
-Two tools:
+exposes all quality rules and AI development workflows over HTTP (JSON-RPC 2.0
+via OXID frontend controller). Four tools:
 
 | Tool | Description |
 |------|-------------|
 | `list_rules` | Browse all rules with ID, severity, title. Filter by tool (`phpstan`, `phpmd`, `phpcs`, `structure`, `templates`, etc.) |
 | `get_rule` | Full details: what the rule detects, what to do instead, severity, documentation link |
-| `list_sections` | Browse AI-RULES.md sections with "read when" triggers — call at session start |
-| `get_section` | Load a specific workflow section (TDD, retrofitting, evidence rules, etc.) |
+| `list_workflows` | Browse AI-RULES.md workflows with "read when" triggers — call at session start |
+| `get_workflow` | Load a specific workflow (TDD, retrofitting, evidence rules, etc.) by ID |
+
+> Legacy `list_sections` / `get_section` tool names still work through a
+> deprecation wrapper (since v2.7.0) but will be removed in v3.x — migrate
+> proactively.
 
 ### Setup (one command)
 
@@ -48,9 +52,116 @@ Writes `.mcp.json` to the shop root with a `streamable-http` entry pointing to
 
 ---
 
-## 🧩 Quality Tools v2.7.0 — Theme-Override Intelligence + Freya API Refresh
+## 🛡️ Quality Tools v2.8.0 — PHPUnit Non-Fatal Surfacing + Cross-Module Activation-Gate Detection
 
-> `b-7.4.x` &bull; 29 April 2026
+> `b-7.4.x` &bull; 20 May 2026
+
+Large additive release. Three new detection capabilities plus an output
+surface that no longer hides PHPUnit's non-fatal events behind an opaque
+`total_issues: 1`. **Not a major** — no CLI removed, no schema break, no
+deprecation actually retired; 3.0.0 is reserved for those.
+
+### New: PHPUnit Non-Fatal Surfacing in TOON
+
+`qualitytools:check ... --caller=ai` now exposes what was previously collapsed
+into an opaque `summary.total_issues: 1`:
+
+- **Counters** under `summary.tests.warnings`,
+  `summary.tests.deprecations`, `summary.tests.phpunit_deprecations` — driven
+  by new `summary_field` rule-data metadata
+- **Per-event detail** under top-level `test_events[]` with
+  `{rule_id, test, file, line, message}` for `tests.warningEvent` and
+  `tests.deprecationEvent`; `file`/`line` are empty for
+  `tests.phpunitDeprecationEvent` whose runner-deprecation source format
+  carries only test name + message on the title line
+- **Summary-footer counter notices** under top-level `test_notices[]` with
+  `{rule_id, message}` — one entry per category that triggered
+
+Six new tests-engine rules in `config/rules.php` (3 counters + 3 per-event)
+drive this end-to-end. `TestCheck` reads `summary_field` / `event_output`
+from rule data — **no hardcoded rule_id mappings**. All five output plugins
+(Ai/Human/Html/Json/Markdown) render the new fields.
+
+### New: `phpstan.taggedIteratorWithoutActivationGate`
+
+New PHPStan rule plus generic engine
+`ConfigDrivenIterationGateRule`. Detects classes that consume a Symfony
+`!tagged_iterator` constructor argument and `foreach` it without calling an
+activation/availability gate on each element. The engine correlates the
+constructor's iterable parameter with `foreach` AST in other methods of the
+same class and enforces a **strict receiver**: `$item->isActive()` on the
+iterated element OR `$this->property->isActive()` where the property type
+matches `activation_service_class_pattern`. Heuristic-free.
+
+Severity: warning. `fix_suggestion` quotes the framework-blessed
+`ModuleActivationBridgeInterface` / `ModuleStateServiceInterface` recipe
+verbatim — agents see the exact API name, not a hand-wavy "use the bridge".
+
+### New: `structure.crossModuleTagActivationGate`
+
+New structure rule plus cross-module YAML scanning infrastructure that
+qualitytools previously lacked:
+
+- `Service/Yaml/YamlLoader(+Interface)` — shared
+  `Yaml::parse(..., PARSE_CUSTOM_TAGS)` surface, factored out of
+  `AdminStructureValidator` so both consumers use one parser
+- `Service/Module/ServicesYamlScanner(+Interface)` enumerates every module's
+  `services.yaml`, indexes tag producers + `!tagged_iterator` consumers
+  (`ServicesYamlIndex`)
+- `Service/Module/CrossModuleActivationGateValidator` uses
+  `RecursiveDirectoryIterator` for a true recursive source scan (PHP's
+  `glob('src/**/X')` does not actually descend) and runs the rule's
+  `gate_method_pattern` against method names extracted with a generic regex
+- `symfony/yaml` promoted from transitive to direct composer dependency
+
+Catches the OPALE-97 antipattern at module-development time: tag producers
+in module A consumed by module B with no activation/availability gate
+method.
+
+### New: `phpstan.providerContractMissingAvailabilityGate`
+
+New PHPStan rule via `interface_member_required` arm on
+`ConfigDrivenClassNodeRule`. For interfaces matching
+`*Provider|*Strategy|*Extension` whose implementations are tagged across
+modules (per the cross-module index), the rule requires the interface to
+declare a non-nullable `bool` member matching
+`isActive|isAvailable|isModuleActive|isModuleAvailable`.
+
+**Return-type matching is strict** — non-nullable `ReflectionNamedType`
+only; nullable `?bool`, union `bool|string`, and intersection types are
+all rejected because they would widen the boolean gate contract and let
+non-bool values pass through consumer filters.
+
+`Service/Module/ProviderInterfaceIndex` derives the cross-module scan
+root **per analysed file** (composer.json walk + `OXID_QT_PROVIDER_INDEX_ROOT`
+env override) so the rule works regardless of how the project lays out
+its module tree.
+
+### Plus: `phpstan.extensionOverrideTypeHint`
+
+Flags type hints added to parent-method overrides in Extension classes —
+they break the module-chain contract by narrowing what subsequent overriders
+can accept.
+
+### Integration Test Pattern (Items 2A + 2B)
+
+Fixture producer/consumer module trees under
+`tests/Fixtures/PhpStan/ClassNode/{InterfaceMember,IterationGate}/`. Driving
+tests call PHPStan as a subprocess with `--error-format=json` and assert
+exit-code + JSON validity before checking for the rule identifier — silent
+PHPStan crashes can no longer masquerade as a clean run.
+
+### Stats
+
+- **122 rules** total (Freya `list_rules`), up from 116 at v2.7.0 release
+- Per-tool: phpstan 17, phpmd 20, phpcs 2, structure 20, admin 9,
+  testStructure 6, docblock 2, template 21, suppression 4, complexity 3,
+  coverage 4, tests 13, i18n 1
+- **2760 tests** pass, 0 issues across all tools, **coverage 81.64%**,
+  docblock 100% (1429/1429), module structure score 82 with 0 violations
+
+<details>
+<summary><b>Previous: v2.7.0 — Theme-Override Intelligence + Freya API Refresh (April 2026)</b></summary>
 
 ### New Theme-Override Rules (all DATA in `config/rules.php`)
 - `template.unknownBlockOverride` (error) — overrides defining `{% block X %}`
@@ -100,10 +211,12 @@ Writes `.mcp.json` to the shop root with a `streamable-http` entry pointing to
 - **`FileSystemInterface::glob()`** added; mockable wrapper around PHP's
   `glob()`, foundational for catalog-style detectors
 
-### Stats
+### Stats (at release)
 - 115 rules, 2598 tests, 0 violations
 - Catalog-driven coverage: 35 widget-only methods discovered live vs an
   8-method curated draft
+
+</details>
 
 <details>
 <summary><b>Previous: v2.6.0 — Smarter Rules, Less Friction (April 2026)</b></summary>
