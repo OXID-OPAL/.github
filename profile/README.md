@@ -52,9 +52,91 @@ Writes `.mcp.json` to the shop root with a `streamable-http` entry pointing to
 
 ---
 
+## 🚀 Quality Tools v3.0.0 — PHPMD-Free, Native Metrics Engine
+
+> **🔵 OXID 7.5** &bull; `b-7.5.x` &bull; tag `v3.0.0` &bull; 26 May 2026
+
+The first major since the v2.0 rebuild. v3.0.0 **removes the external PHPMD
+dependency entirely** — every former PHPMD check is reimplemented in-tree, **with
+no loss of v2.8 quality scope**. `phpmd/phpmd` is no longer a composer dependency,
+the `--phpmd` / `--no-phpmd` flags are gone, and `qualitytools:check` no longer
+dispatches a PHPMD analyser.
+
+### PHPMD → native, no scope loss
+
+- **Native metrics engine** (nikic/php-parser, in-tree) — method/class length,
+  method & public-method counts, N-Path, WMC, field counts, plus the OO metrics
+  number-of-children, depth-of-inheritance and coupling-between-objects.
+- **PHPStan AST rule ports** — `addslashesDetection`, `avoidOxNewInServices`,
+  `deprecatedDatabaseProvider`, `magicPropertyAccess`, `directViewDataAccess`,
+  `rawSqlDetection` (expanded), `staticAccess`, the naming-convention family
+  (long/short class, variable, and method names; boolean getters), and the
+  DTO-aware parameter-list / boolean-flag rules.
+- Every v2.x `phpmd.*` rule_id has a documented disposition (ported / covered /
+  dropped-with-reason) — see the migration table in the
+  [CHANGELOG](https://github.com/OXID-eSales/oxid-quality-tools/blob/b-7.5.x/CHANGELOG.md).
+
+### Also new in v3
+
+- **PHPUnit notice surfacing** — PHPUnit 12 "mock without expectations" notices
+  surface as first-class per-test events (`tests.phpunitNoticeEvent`) plus a
+  counter, the same way warnings and deprecations already did.
+- **Execution hardening** — internal subprocess execution no longer builds shell
+  command strings. A structured `ProcessCommand` (argv + cwd + env + timeout) runs
+  through Symfony Process with no shell, so tool arguments can never be re-parsed
+  by a shell.
+- **PHPUnit test-selection passthrough** — `--filter`, `--group`,
+  `--exclude-group` modifiers forward straight to PHPUnit (full gate or `--test`)
+  without tripping purpose-flag exclusivity.
+- **Non-blocking advisories** — new `blocks_gate` rule-data flag. The first
+  advisory, `metrics.shellCommandExecution` (`info`), flags direct
+  `exec()` / `shell_exec()` / `proc_open()` / `Process::fromShellCommandline()` and
+  recommends Symfony Process — it surfaces in reports and `total_issues` but
+  **never fails a module gate**.
+
+### Compatibility
+
+- **OXID 7.5 only** (`b-7.5.x`). Modules still on **OXID 7.4** stay on the **2.8**
+  line (below). A pre-cutoff snapshot of the v2.9.0 PHPMD-tagged rules is preserved
+  on the `b-7.5.x-v2.9` branch and the `v2.9.0` tag for modules that still want
+  PHPMD coverage.
+
+### Stats
+
+- **147 rules** total — incl. 47 PHPStan and 12 native-metrics rules; PHPMD
+  composer dependency **removed**
+- Full gate: **exit 0, 0 blocking issues, 1052 tests pass, coverage 83.09%**,
+  docblock 100%, max complexity 8
+
+---
+
+## 🌉 Quality Tools v2.9.0 — OXID 7.5 Bridge
+
+> **🔵 OXID 7.5** (first 7.5 release) &bull; `b-7.5.x` &bull; 20 May 2026
+
+The branch point from `b-7.4.x` to `b-7.5.x`. **v2.9 targets OXID 7.5 shops only**
+— composer constraints do not resolve on a 7.4 stack by design; modules still on
+7.4 keep the 2.8 line. PHPMD still ships in 2.9, but every `phpmd.*` rule now
+carries a Freya deprecation banner flagging its removal in v3.0.
+
+- **New PHPStan engine arms** — `method_call_banned` (inheritance-aware via
+  `target_class_extends`), a `method_name` filter on `static_call_banned`, and a
+  new `function_call_banned` engine (`ConfigDrivenFuncCallRule`, fail-closed on
+  unknown argument matchers).
+- **New 7.5 forward-compatibility rules** — `phpstan.coreGetContainer`,
+  `phpstan.coreDispatchEvent`, `phpstan.idFromUid` (→ `Id::fromString()`),
+  `phpstan.legacyGlobalFunctions`.
+- **Freya `## Deprecated` banner** on every `tool=phpmd` rule — telegraphs the v3
+  PHPMD removal to AI agents, keyed off rule data.
+
+> A snapshot of the v2.9.0 rule set (PHPMD still present) is preserved on the
+> `b-7.5.x-v2.9` branch and the `v2.9.0` tag.
+
+---
+
 ## 🛡️ Quality Tools v2.8.0 — PHPUnit Non-Fatal Surfacing + Cross-Module Activation-Gate Detection
 
-> `b-7.4.x` &bull; 20 May 2026
+> **🟢 Last OXID 7.4-compatible release** &bull; `b-7.4.x` &bull; 20 May 2026
 
 Large additive release. Three new detection capabilities plus an output
 surface that no longer hides PHPUnit's non-fatal events behind an opaque
@@ -429,4 +511,4 @@ See [oxid-quality-tools](https://github.com/OXID-eSales/oxid-quality-tools) for 
 
 ## Repositories
 
-- **oxid-quality-tools** — Unified quality checking for OXID modules (PHPStan, PHPMD, PHPCS, PHPUnit, coverage)
+- **oxid-quality-tools** — Unified quality checking for OXID modules (PHPStan, PHPCS, native metrics, PHPUnit, coverage; PHPMD removed in v3, retained on the 2.x / OXID 7.4 line)
