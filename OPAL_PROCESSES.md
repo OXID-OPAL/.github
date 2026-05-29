@@ -306,7 +306,7 @@ README structure:
 5. Usage — admin configuration and frontend behavior
 6. How It Works — technical explanation
 7. Uninstallation steps
-8. Quality Assurance — PHPStan, PHPMD, PHPCS, coverage, test count
+8. Quality Assurance — PHPStan, PHPCS, native metrics, coverage, test count (PHPMD for pre-v3 toolchains)
 9. Support + License
 
 ### 5.5 README Content Rules
@@ -408,8 +408,8 @@ gh api repos/OXID-OPAL/<module-id>/teams --jq '.[] | "\(.slug): \(.permission)"'
 
    h4. Quality
    * PHPStan Level 8: 0 issues
-   * PHPMD: 0 violations
    * PHPCS PSR-12: 0 violations
+   * Native metrics: 0 blocking violations
    * Test coverage: XX% (N unit tests)
    COMMENT
    ```
@@ -513,12 +513,17 @@ Note: Jira uses German locale — `timeSpent` shows as "0,56t" (Tage = days). Wo
 
 | Tool | Requirement |
 |------|-------------|
-| PHPStan | Level 8, 0 errors |
-| PHPMD | 0 violations |
+| PHPStan | Level 8, 0 errors (includes the ported PHPMD-equivalent OXID rules) |
 | PHPCS | 0 violations (PSR-12 + OXID rules) |
+| Native metrics | 0 blocking violations (method/class length, method counts, N-Path, WMC, coupling, fields) |
 | Tests | 100% passing |
 | Coverage | >= 80% |
-| Complexity | CRAP < 30, CC <= 10, NPath < 200 |
+| Complexity | CRAP < 30, CC, NPath < 200 |
+
+> **PHPMD removed in v3.** As of `oxid-quality-tools` v3.0.0 there is no external
+> PHPMD dependency — its checks are reimplemented as the in-tree native metrics
+> engine plus PHPStan AST rule ports. Older 2.x docs that list a separate "PHPMD"
+> tool refer to the pre-v3 toolchain.
 
 ### Running Quality Checks
 
@@ -546,6 +551,37 @@ docker compose -f <project-root>/docker-compose.yml exec <web-container> bash -c
 
 Using `--caller=ai` produces output in TOON format (compact, ~30-60% fewer tokens than JSON) — the source of truth for all quality assessments. Without it, output is formatted for human consumption with colors.
 
+`exit_code` is the gate verdict. `total_issues` is the count of **all** surfaced
+findings and **includes non-blocking advisories** (rules with `blocks_gate: false`,
+e.g. `metrics.shellCommandExecution`). Therefore `exit_code: 0` together with
+`total_issues > 0` is valid — it means the only findings were advisories, which
+surface for visibility but never fail the gate.
+
+### Toolchain Version & OXID Targeting
+
+`oxid-quality-tools` (`OXID-eSales/oxid-quality-tools`) is the quality gate behind
+every OPAL release. Tool version maps to a single OXID minor — use the version that
+matches the shop:
+
+| Tool version | Branch | OXID target |
+|---|---|---|
+| v1.x | `b-7.4.x` | OXID 7.4 |
+| v2.9+ | `b-7.5.x` | **OXID 7.5 only** |
+| v3.x | `b-7.5.x` | **OXID 7.5 only** |
+
+- **v2.9 and later are OXID 7.5 releases only.** There is no OXID 7.4 backport of the
+  2.9+ line — run it against an OXID 7.5 shop. The last 7.4-targeted line is v1.x on
+  `b-7.4.x`.
+- **v3.0.0 is published** — tag `v3.0.0` on branch `b-7.5.x`. v3.0.0 **removes the
+  external PHPMD dependency**: the former PHPMD checks are reimplemented as an in-tree
+  native metrics engine (method/class length, method counts, N-Path, WMC, coupling,
+  fields) plus PHPStan AST rule ports, so reports and gate output no longer reference
+  PHPMD.
+- v3 also introduces **non-blocking advisories** (e.g. `metrics.shellCommandExecution`,
+  which recommends Symfony Process with an argument vector / explicit cwd+env / bounded
+  timeout instead of `exec()`/`shell_exec()`/`proc_open()`/`Process::fromShellCommandline()`).
+  Advisories surface in reports but never fail a module gate.
+
 ---
 
 ## 8. Quality Tools Improvement Suggestions
@@ -559,7 +595,7 @@ When encountering things that `qualitytools` should detect or report better, fil
 This section applies when using AI coding agents (Claude Code with Serena/Freya MCP servers).
 
 **On session start:**
-1. Call Freya `list_sections()` to load available workflows and quality rules
+1. Call Freya `list_workflows()` to load available workflows and quality rules (the older `list_sections()` is a deprecated shim)
 2. Read relevant Serena memories (project context, module patterns, conventions)
 3. Tests before code (TDD workflow)
 
