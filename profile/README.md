@@ -52,6 +52,56 @@ Writes `.mcp.json` to the shop root with a `streamable-http` entry pointing to
 
 ---
 
+## 🧩 Quality Tools v3.1.0 — Per-File Coverage, Module Waivers, Component Targets
+
+> **🔵 OXID 7.5** &bull; `b-7.5.x` &bull; tag `v3.1.0` &bull; 9 June 2026
+
+A backwards-compatible feature + fix release clearing the open GitHub issue
+backlog (#10–#19). New functionality is additive and the rule changes only
+reduce false positives, so existing consumers are unaffected — a minor bump.
+
+### Added
+
+- **Per-file coverage breakdown** — coverage output now lists each file's
+  `path / covered / total / percent`. The `--caller=ai` TOON view shows the
+  files below threshold, lowest-coverage first; JSON reports carry the full
+  list. No more dropping to a raw PHPUnit run to find what drags coverage down.
+- **Module-level waiver API** — a module may ship a `.qualitytools.rules.php` to
+  add narrow, reason-tagged waivers for `phpstan.staticAccess` and
+  `phpstan.rawSqlDetection`. The merge is **append-only and whitelisted**: a
+  module can never weaken a rule's severity, change its detection, or disable it.
+  `ContainerFactory::getInstance()` is now a sanctioned default for
+  chain-instantiated classes.
+- **`oxideshop-component` targets** — `qualitytools:check <package>` now accepts
+  OXID 7.4+ components (composer `type: oxideshop-component`, no `metadata.php`),
+  analysing them as a directory target.
+- **`@mixin` docblock resolution** — `{@inheritDoc}` validation honours a
+  class-level `@mixin`, so extension classes whose real parent is a runtime-only
+  `_parent` alias can document overrides cleanly.
+
+### Fixed
+
+- **Docblock inheritance resolution** — file-level `use` imports were collected
+  as traits, producing spurious "remove {@inheritDoc}" findings; trait collection
+  is now in-class only. This also fixed two latent bugs it had been masking
+  (qualified-import FQN doubling, and `implements` on anonymous classes).
+- **HTML report no longer fatals on docblock findings** — null / missing issue
+  fields are defaulted and the rule + severity badge render correctly.
+- **`admin_twig` theme directory accepted** — admin-only modules overriding admin
+  Twig blocks no longer carry an unfixable structure violation.
+- **Composer constraint** relaxed to `^7.5 || dev-b-7.5.x` so the tools install
+  alongside a released 7.5 metapackage, not only the dev branch.
+
+Full per-issue disposition is in the
+[CHANGELOG](https://github.com/OXID-eSales/oxid-quality-tools/blob/b-7.5.x/CHANGELOG.md).
+
+### Stats
+
+- Full gate: **exit 0, 0 blocking issues, 1083 tests pass, coverage ~83.9%**,
+  docblock 100%, max complexity 8
+
+---
+
 ## 🚀 Quality Tools v3.0.0 — PHPMD-Free, Native Metrics Engine
 
 > **🔵 OXID 7.5** &bull; `b-7.5.x` &bull; tag `v3.0.0` &bull; 26 May 2026
