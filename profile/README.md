@@ -52,6 +52,66 @@ Writes `.mcp.json` to the shop root with a `streamable-http` entry pointing to
 
 ---
 
+## 🛡️ Quality Tools v3.2.0 — Suppression Governance, Migration Safety, Override-Signature Backbone
+
+> **🔵 OXID 7.5** &bull; `b-7.5.x` &bull; tag `v3.2.0` &bull; 22 June 2026
+
+A backwards-compatible feature release (minor bump) closing the remaining open
+GitHub issues (#20, #21). New rules, a suppression-governance surface, and honest
+reporting are additive; the only behaviour that can newly fail a gate is stricter
+checks within the existing quality scope.
+
+### Added
+
+- **Suppression & waiver governance (SUP)** — a unified, normalized inventory of
+  every escape channel (in-code annotations, the module waiver, `phpstan.neon`
+  `ignoreErrors`/baseline, `phpcs.xml` excludes) surfaced in every report, plus
+  advisory findings for unreasoned / net-new / over-broad suppressions and a
+  clean/dirty **debt metric**. A committed `.qualitytools.suppressions.json`
+  baseline drives the net-new check and an **opt-in dirty-debt gate**; everything
+  else stays advisory.
+- **Private service-locator detection (closes #21)** — flags a private same-module
+  service fetched via `ContainerFactory`/`ContainerFacade` in an Extension class
+  (a runtime `ServiceNotFoundException` that previously passed the gate green),
+  cross-checked against the module's `services.yaml` visibility.
+- **Migration `--dry-run` safety (MIG/SQL)** — `phpstan.directMigrationExecute`
+  (error + reason-bound waiver) flags directly-executed mutating SQL that bypasses
+  the `--dry-run` preview; `rawSqlDetection` is migration-aware and its waiver now
+  matches `sprintf()`-composed SQL (closes #20).
+- **Override-signature backbone (SIG)** — authoritative shop-root resolution,
+  `extensionParentUnresolved`, and a full Core-signature drift rule, so an
+  Extension override with a silently-broken signature no longer passes green.
+- **Pre-encoded accessor / variant-name escaping (TPL)** — catches OXID accessors
+  like `Selection::getName()` (already HTML-encoded) when double-encoded in Twig
+  output or used as a lookup / array-subscript key in PHP.
+- **Missing referenced classes (REF)** — validates that classes referenced from
+  `services.yaml` and both sides of the `metadata.php` `extend` map exist.
+- **Non-blocking finding channel (POL-1A)** — rules can be advisory
+  (`blocks_gate: false`): counted and shown in every report, but they never fail
+  the build.
+
+### Changed
+
+- **Honest reporting (TEST/MET/REP)** — loud PHPUnit capture-failure, runner
+  warnings, per-test skipped/risky detail, explicit suite-crash diagnostics; the
+  complexity section is CRAP-only with per-method CCN gated statically; the
+  Markdown report discloses its truncation and points at the JSON source.
+- **Tagged-iterator rule gated on real wiring (GATE)** — fires only for an
+  object/interface value type actually wired via `!tagged_iterator` in the
+  module's `services.yaml` (or whose wiring is unknown), eliminating the
+  scalar-map and manually-passed-iterable false positives.
+
+Full per-cluster disposition is in the
+[CHANGELOG](https://github.com/OXID-eSales/oxid-quality-tools/blob/b-7.5.x/CHANGELOG.md).
+
+### Stats
+
+- Full gate: **exit 0, 0 blocking issues, 1470 tests pass, coverage ~86.4%**,
+  docblock 100%, **168 rules** total (54 PHPStan), GitHub issue backlog cleared
+  (#20, #21 closed)
+
+---
+
 ## 🧩 Quality Tools v3.1.0 — Per-File Coverage, Module Waivers, Component Targets
 
 > **🔵 OXID 7.5** &bull; `b-7.5.x` &bull; tag `v3.1.0` &bull; 9 June 2026
