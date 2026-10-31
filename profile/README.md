@@ -52,6 +52,64 @@ Writes `.mcp.json` to the shop root with a `streamable-http` entry pointing to
 
 ---
 
+## 🔁 Quality Tools — One Engine on Every Shop Line (branch heads, untagged)
+
+> **🔵 OXID 7.6 / 7.5 / 7.4** &bull; `b-7.6.x` → `b-7.5.x` → `b-7.4.x` &bull; no tag yet &bull; from 31 October 2026
+
+Module CIs that install Quality Tools from a **branch head** (`dev-b-7.x.x`) pick up
+the following changes the moment a line branch is merged. A tagged 3.x release for
+all lines follows when the series is complete.
+
+**What changes:** all shop lines now run **one engine** (the v3 engine from
+`b-7.6.x`); rule data decides which rules apply to which OXID and PHP version. Each
+line keeps its own shop and PHP constraints:
+
+| Line | OXID | PHP | PHPUnit | Status |
+|---|---|---|---|---|
+| `b-7.6.x` | 7.6 (and 7.5) | 8.3+ | 12 | trunk |
+| `b-7.5.x` | 7.5 (and 7.4) | 8.3+ | 11 or 12 | follows the trunk since 28 October; next merge **31 October** |
+| `b-7.4.x` | 7.4 (and 7.3) | 8.2+ | 11 | moves from the **2.8 engine to the v3 engine** — next |
+
+**PHPMD:** below PHP 8.3 PHPMD 2.15 runs with its stock rules; from PHP 8.3 on its
+PHPStan/native successors report the same defects. A `@SuppressWarnings("PHPMD.X")`
+counts for the successor too. A suppression that names no PHPMD rule (or is written
+in a form PHPMD ignores, e.g. a space before `(`) now **fails the gate**; one that
+names a stock PHPMD rule the gate does not check is advisory.
+
+### `b-7.5.x` (merge of 31 October)
+
+Measured on OXID 7.5 with six OPAL modules, each activated alone, before and after
+the merge: **no verdict changed**. One new advisory finding
+(`suppression.ungatedPhpmdRule` for a `@SuppressWarnings("PHPMD.CamelCasePropertyName")`
+in opalxrechnung); the other five reports have the same findings and gate effects.
+
+### `b-7.4.x` (next)
+
+The 7.4 line takes the v3 engine. Measured with the same six modules on OXID 7.4
+(PHP 8.3 and PHP 8.2) against the trial merge: **no verdict changed**, but reports
+grow. This replaces the "last OXID 7.4-compatible release" note on v2.8.0 below.
+
+- **Gating findings 462 → 504** (PHP 8.3) / **503** (PHP 8.2), mostly because the
+  type-aware PHPStan successors see more than the 7.4 PHPMD rules did:
+  `phpstan.directViewDataAccess` +34, `phpstan.rawSqlDetection` +11,
+  `phpstan.avoidOxNewInServices` +3. Method complexity is measured by the native
+  metrics (`metrics.cyclomaticComplexity`, `metrics.longMethod`).
+- **Advisory findings 18 → 37**, mostly suppression governance
+  (`suppression.netNew` / `suppression.overBroad`).
+- **Renamed rule:** `phpstan.extensionOverrideTypeHint` is reported as
+  `phpstan.extensionSignatureDrift`. Waivers and suppressions with the old id still
+  apply; a PHPStan ignore of the old identifier (`@phpstan-ignore
+  extensionOverrideTypeHint`, neon `ignoreErrors`) no longer matches — switch it to
+  `extensionSignatureDrift`.
+- **Composer:** the line now requires the Codeception packages; a `composer update`
+  installs six packages (Codeception modules, page objects and php-webdriver).
+
+Details per line: [CHANGELOG](https://github.com/OXID-eSales/oxid-quality-tools/blob/b-7.6.x/CHANGELOG.md)
+(entries "Lines: 7.5" and "Lines: 7.4") and the tracking issue
+[#572](https://github.com/OXID-eSales/oxid-quality-tools/issues/572).
+
+---
+
 ## 🛡️ Quality Tools v3.2.0 — Suppression Governance, Migration Safety, Override-Signature Backbone
 
 > **🔵 OXID 7.5** &bull; `b-7.5.x` &bull; tag `v3.2.0` &bull; 22 June 2026
