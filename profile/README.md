@@ -67,8 +67,8 @@ line keeps its own shop and PHP constraints:
 | Line | OXID | PHP | PHPUnit | Status |
 |---|---|---|---|---|
 | `b-7.6.x` | 7.6 (and 7.5) | 8.3+ | 12 | trunk |
-| `b-7.5.x` | 7.5 (and 7.4) | 8.3+ | 11 or 12 | follows the trunk since 28 October; next merge **31 October** |
-| `b-7.4.x` | 7.4 (and 7.3) | 8.2+ | 11 | moves from the **2.8 engine to the v3 engine** — next |
+| `b-7.5.x` | 7.5 (and 7.4) | 8.3+ | 11 or 12 | follows the trunk since 28 October; merged again **31 October** |
+| `b-7.4.x` | 7.4 (and 7.3) | 8.2+ | 11 | moved from the **2.8 engine to the v3 engine** on **31 October** |
 
 **PHPMD:** below PHP 8.3 PHPMD 2.15 runs with its stock rules; from PHP 8.3 on its
 PHPStan/native successors report the same defects. A `@SuppressWarnings("PHPMD.X")`
@@ -83,10 +83,10 @@ the merge: **no verdict changed**. One new advisory finding
 (`suppression.ungatedPhpmdRule` for a `@SuppressWarnings("PHPMD.CamelCasePropertyName")`
 in opalxrechnung); the other five reports have the same findings and gate effects.
 
-### `b-7.4.x` (next)
+### `b-7.4.x` (merge of 31 October)
 
-The 7.4 line takes the v3 engine. Measured with the same six modules on OXID 7.4
-(PHP 8.3 and PHP 8.2) against the trial merge: **no verdict changed**, but reports
+The 7.4 line takes the v3 engine. OXID 7.3 shops (the prior minor) run it too. Measured with the same six modules on OXID 7.4
+(PHP 8.3 and PHP 8.2) before and after the merge: **no verdict changed**, but reports
 grow. This replaces the "last OXID 7.4-compatible release" note on v2.8.0 below.
 
 - **Gating findings 462 → 504** (PHP 8.3) / **503** (PHP 8.2), mostly because the
