@@ -54,7 +54,7 @@ Writes `.mcp.json` to the shop root with a `streamable-http` entry pointing to
 
 ## 🔁 Quality Tools — One Engine on Every Shop Line (branch heads, untagged)
 
-> **🔵 OXID 7.6 / 7.5 / 7.4** &bull; `b-7.6.x` → `b-7.5.x` → `b-7.4.x` &bull; no tag yet &bull; from 31 October 2026
+> **🔵 OXID 7.6 / 7.5 / 7.4 / 7.3** &bull; `b-7.6.x` → `b-7.5.x` → `b-7.4.x` → `b-7.3.x` &bull; no tag yet &bull; from 31 October 2026
 
 Module CIs that install Quality Tools from a **branch head** (`dev-b-7.x.x`) pick up
 the following changes the moment a line branch is merged. A tagged 3.x release for
@@ -69,12 +69,39 @@ line keeps its own shop and PHP constraints:
 | `b-7.6.x` | 7.6 (and 7.5) | 8.3+ | 12 | trunk |
 | `b-7.5.x` | 7.5 (and 7.4) | 8.3+ | 11 or 12 | follows the trunk since 28 October; merged again **31 October** |
 | `b-7.4.x` | 7.4 (and 7.3) | 8.2+ | 11 | moved from the **2.8 engine to the v3 engine** on **31 October** |
+| `b-7.3.x` | 7.3 (and 7.2) | 8.2+ | 11 | moves from the **v1 engine to the v3 engine** on **1 November** (merge follows this notice) |
 
 **PHPMD:** below PHP 8.3 PHPMD 2.15 runs with its stock rules; from PHP 8.3 on its
 PHPStan/native successors report the same defects. A `@SuppressWarnings("PHPMD.X")`
 counts for the successor too. A suppression that names no PHPMD rule (or is written
 in a form PHPMD ignores, e.g. a space before `(`) now **fails the gate**; one that
 names a stock PHPMD rule the gate does not check is advisory.
+
+### `b-7.6.x` (merges of 1 November)
+
+Four fix packages on the trunk. A module CI on `dev-b-7.6.x` gets them now, `b-7.3.x` gets them with its merge below,
+and `b-7.5.x` and `b-7.4.x` get them with their next merge:
+
+- **`--coverage` fails on failing tests again.** A run with coverage judged only the coverage: a failing test or an
+  error in its PHPUnit run left the exit code at 0. The tests of the coverage run are now judged as with `--test`
+  (exit code 1, the failures in every output), still from one PHPUnit run. The same holds when `--complexity`,
+  `--coverage-html` or `--coverage-threshold` enable the coverage run; `--no-test` keeps the tests out. **A CI step
+  that runs `--coverage` on a module with failing tests now fails.**
+- **A metadata.php that cannot be loaded no longer ends the run.** When QT searches for a module that is not in the
+  shop configuration, it skips a metadata.php that does not parse or throws, and names it in the "module not found"
+  message. This crash hit OXID 7.2 shops.
+- **Every finding is shown with its rule id and its rule's advice, in every output** (TOON, JSON, Markdown,
+  HTML, console). The advice is never cut short. A test failure's advice now reads: find out whether the code or
+  the test is wrong, and never skip, delete or loosen an assertion to make the test pass.
+- **JSON shape change:** `test_structure.issues` is now a list of objects (`path`, `message`, `severity`, `rule`,
+  `blocks_gate`, `fix_suggestion`), not a list of strings. The former string is `message`, unchanged. A parser that
+  reads this list must be adapted.
+- **A module without tests** fails with its own rules `tests.noTests` and `coverage.noTests` instead of a
+  "Failed to load test suites" crash. The verdict is the same.
+- **Plain functions** (`function name()`) are checked like methods: unused parameters and locals, boolean flags,
+  parameter lists, complexity and length.
+
+Measured with six OPAL modules on OXID 7.6 and 7.4 (PHP 8.3 and 8.2): **no verdict of the full gate changed**.
 
 ### `b-7.5.x` (merge of 31 October)
 
@@ -104,8 +131,39 @@ grow. This replaces the "last OXID 7.4-compatible release" note on v2.8.0 below.
 - **Composer:** the line now requires the Codeception packages; a `composer update`
   installs six packages (Codeception modules, page objects and php-webdriver).
 
+### `b-7.3.x` (merge of 1 November)
+
+The 7.3 line moves from its own **v1 engine to the v3 engine**, with the trunk fixes above. OXID 7.2 shops (the
+prior minor) run it too. The line keeps PHP 8.2, PHPUnit 11 and PHPMD 2.15. Measured with the OPAL modules that install on OXID 7.3
+(opalquoterequest requires OXID 7.4), on PHP 8.3 and PHP 8.2, before and after the merge:
+
+| Module | Exit code PHP 8.3 | Exit code PHP 8.2 | Findings |
+|---|---|---|---|
+| opalattributemanager | 1 → 1 | 1 → 1 | 8 → 44 (11 advisory) |
+| opaldashboard (no tests) | 1 → 1 | 1 → 1 | 390 → 451 / 450 (3 advisory) |
+| opalfilters | **0 → 1** | 1 → 1 | 0 → 1 |
+| opallastseenproducts | 1 → 1 | 1 → 1 | 2 → 27 (11 advisory) |
+| opaltrackingstatus | 0 → 0 | **1 → 0** | 2 → 2 (both advisory) |
+
+- **opalfilters now fails** on `phpstan.serviceInExtension`: the rule checks every non-private method of an
+  extension, and `Search::opalHitSelect()` has complexity 6 (max 5).
+- **opaltrackingstatus now passes on PHP 8.2:** the v1 engine read PHPUnit's exit code as -1 although every test
+  passed.
+- **`--coverage` judges the tests of its run,** as the v1 engine did; `--no-test` keeps them out.
+- **A module without tests fails** (`tests.noTests`, `coverage.noTests`); the v1 engine skipped its tests.
+- **Ignores that stop matching:** neon ignores by the v1 identifiers `oxid.methodPrefix`, `oxid.noMethodPrefix`
+  and `oxidQualityTools.avoidConfigInjection` (now `prefixedMethodName` and `avoidConfigInjection`), ignores by the
+  message of a v1 rule, and `phpcs:ignore` of the v1 sniff codes `PhpCs.Files.ModuleAssetStructure.<Category>` and
+  `PhpCs.NamingConventions.UnderscoreMethodPrefix` (now `PhpCs.Files.ConfigDrivenFile.<Category>` and
+  `PhpCs.NamingConventions.ConfigDrivenToken.UnderscoreMethodPrefix`).
+- **Report files** move into `<module>/quality-reports/`; `--report-format=all` writes HTML, JSON and Markdown
+  (v1 wrote JSON to `quality-report.all`).
+- **Output for parsers:** the exit code is 0 or 1 as before. The AI output is TOON, so `jq` does not read it; the
+  JSON report changes its layout (findings under `tools.<tool>.violations[]` with `rule`, `blocks_gate` and
+  `fix_suggestion`). The CHANGELOG entry lists the paths.
+
 Details per line: [CHANGELOG](https://github.com/OXID-eSales/oxid-quality-tools/blob/b-7.6.x/CHANGELOG.md)
-(entries "Lines: 7.5" and "Lines: 7.4") and the tracking issue
+(entries "Lines: 7.5", "Lines: 7.4" and "Lines: 7.3") and the tracking issue
 [#572](https://github.com/OXID-eSales/oxid-quality-tools/issues/572).
 
 ---
