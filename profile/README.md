@@ -62,16 +62,19 @@ all lines follows when the series is complete.
 
 **What changes:** all shop lines now run **one engine** (the v3 engine from
 `b-7.6.x`); rule data decides which rules apply to which OXID and PHP version. Each
-line keeps its own shop and PHP constraints:
+line keeps its own shop and PHP constraints. Every line serves the OXID minor it targets **and the prior minor
+migrating to it, each on its own PHP** (a 7.4 shop runs the 7.5 line on PHP 8.2):
 
 | Line | OXID | PHP | PHPUnit | Status |
 |---|---|---|---|---|
 | `b-7.6.x` | 7.6 (and 7.5) | 8.3+ | 12 | trunk |
-| `b-7.5.x` | 7.5 (and 7.4) | 8.3+ | 11 or 12 | follows the trunk since 28 October; merged again **31 October** |
+| `b-7.5.x` | 7.5 (and 7.4) | 8.3+ (8.2 for a 7.4 shop) | 11 or 12 | follows the trunk since 28 October; merged again **31 October** and **2 November** |
 | `b-7.4.x` | 7.4 (and 7.3) | 8.2+ | 11 | moved from the **2.8 engine to the v3 engine** on **31 October** |
 | `b-7.3.x` | 7.3 (and 7.2) | 8.2+ | 11 | moved from the **v1 engine to the v3 engine** on **1 November** |
 
-**PHPMD:** below PHP 8.3 PHPMD 2.15 runs with its stock rules; from PHP 8.3 on its
+**PHPMD is bound to the line:** PHPMD 2.15 runs with its stock rules **only on the
+`b-7.4.x` and `b-7.3.x` lines, and only below PHP 8.3**. Nothing on PHP 8.3 or later
+runs PHPMD, and the `b-7.5.x` and `b-7.6.x` lines never do, on any PHP: there its
 PHPStan/native successors report the same defects. A `@SuppressWarnings("PHPMD.X")`
 counts for the successor too. A suppression that names no PHPMD rule (or is written
 in a form PHPMD ignores, e.g. a space before `(`) now **fails the gate**; one that
@@ -80,7 +83,7 @@ names a stock PHPMD rule the gate does not check is advisory.
 ### `b-7.6.x` (merges of 1 November)
 
 Four fix packages on the trunk. A module CI on `dev-b-7.6.x` gets them now, `b-7.3.x` gets them with its merge below,
-and `b-7.5.x` and `b-7.4.x` get them with their next merge:
+`b-7.5.x` got them on 2 November (below), and `b-7.4.x` gets them with its next merge:
 
 - **`--coverage` fails on failing tests again.** A run with coverage judged only the coverage: a failing test or an
   error in its PHPUnit run left the exit code at 0. The tests of the coverage run are now judged as with `--test`
@@ -102,6 +105,20 @@ and `b-7.5.x` and `b-7.4.x` get them with their next merge:
   parameter lists, complexity and length.
 
 Measured with six OPAL modules on OXID 7.6 and 7.4 (PHP 8.3 and 8.2): **no verdict of the full gate changed**.
+
+### `b-7.5.x` (merge of 2 November)
+
+The 7.5 line takes the trunk fixes of 1 November (above) and the line-bound PHPMD rule:
+
+- **A 7.4 shop on PHP 8.2 is now checked by the 7.5 line.** Before, every run stopped with
+  `runtime.phpVersionTooOld` ("needs PHP 8.3"). Now it gets the full gate on its own PHP minimum, with the PHPStan and
+  native metrics successors and **never PHPMD**. A 7.5 shop still needs PHP 8.3, and a shop below its own minor's PHP
+  minimum is still stopped.
+- **A module CI that runs the 7.5 line on a 7.4 shop under PHP 8.2 now gets a verdict:** in the six OPAL module runs
+  its PHPStan and metrics findings are those of the 7.5 line on OXID 7.5 under PHP 8.3, with no `phpmd` section.
+
+Measured on OXID 7.5 (PHP 8.3) with six OPAL modules, each activated alone, before and after the merge:
+**no verdict of the full gate changed**.
 
 ### `b-7.5.x` (merge of 31 October)
 
