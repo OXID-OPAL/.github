@@ -69,7 +69,7 @@ line keeps its own shop and PHP constraints:
 | `b-7.6.x` | 7.6 (and 7.5) | 8.3+ | 12 | trunk |
 | `b-7.5.x` | 7.5 (and 7.4) | 8.3+ | 11 or 12 | follows the trunk since 28 October; merged again **31 October** |
 | `b-7.4.x` | 7.4 (and 7.3) | 8.2+ | 11 | moved from the **2.8 engine to the v3 engine** on **31 October** |
-| `b-7.3.x` | 7.3 (and 7.2) | 8.2+ | 11 | moves from the **v1 engine to the v3 engine** on **1 November** (merge follows this notice) |
+| `b-7.3.x` | 7.3 (and 7.2) | 8.2+ | 11 | moved from the **v1 engine to the v3 engine** on **1 November** |
 
 **PHPMD:** below PHP 8.3 PHPMD 2.15 runs with its stock rules; from PHP 8.3 on its
 PHPStan/native successors report the same defects. A `@SuppressWarnings("PHPMD.X")`
