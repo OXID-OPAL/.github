@@ -110,7 +110,7 @@ names a stock PHPMD rule the gate does not check is advisory.
   the `--stdio` option are removed; `--setup --stdio` now stops with a message instead of writing a dead entry. If your
   `.mcp.json` still has a stdio `freya` entry, run `vendor/bin/freya --setup` in the shop root, or register
   `http://localhost:<port>/index.php?cl=freya_mcp` with `claude mcp add --transport http freya …`. Merged into
-  `b-7.6.x`; the other lines follow.
+  `b-7.6.x` and `b-7.5.x`; `b-7.4.x` and `b-7.3.x` follow.
 
 - **The module list shows the right version** (#630). `metadata.php` still named 3.2.0 after the 4.0.0 release, so
   every shop's module list showed 3.2.0. It now names 4.0.0; a shop shows it after `composer update` of the quality
