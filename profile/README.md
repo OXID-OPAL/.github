@@ -69,7 +69,7 @@ migrating to it, each on its own PHP** (a 7.4 shop runs the 7.5 line on PHP 8.2)
 |---|---|---|---|---|
 | `b-7.6.x` | 7.6 (and 7.5) | 8.3+ | 12 | trunk |
 | `b-7.5.x` | 7.5 (and 7.4) | 8.3+ (8.2 for a 7.4 shop) | 11 or 12 | follows the trunk since 28 October; merged again **31 October** and **2 November** |
-| `b-7.4.x` | 7.4 (and 7.3) | 8.2+ | 11 | moved from the **2.8 engine to the v3 engine** on **31 October** |
+| `b-7.4.x` | 7.4 (and 7.3) | 8.2+ | 11 | moved from the **2.8 engine to the v3 engine** on **31 October**; merged again **2 November** |
 | `b-7.3.x` | 7.3 (and 7.2) | 8.2+ | 11 | moved from the **v1 engine to the v3 engine** on **1 November** |
 
 **PHPMD is bound to the line:** PHPMD 2.15 runs with its stock rules **only on the
@@ -83,7 +83,7 @@ names a stock PHPMD rule the gate does not check is advisory.
 ### `b-7.6.x` (merges of 1 November)
 
 Four fix packages on the trunk. A module CI on `dev-b-7.6.x` gets them now, `b-7.3.x` gets them with its merge below,
-`b-7.5.x` got them on 2 November (below), and `b-7.4.x` gets them with its next merge:
+`b-7.5.x` and `b-7.4.x` got them on 2 November (below):
 
 - **`--coverage` fails on failing tests again.** A run with coverage judged only the coverage: a failing test or an
   error in its PHPUnit run left the exit code at 0. The tests of the coverage run are now judged as with `--test`
@@ -126,6 +126,15 @@ Measured on OXID 7.5 with six OPAL modules, each activated alone, before and aft
 the merge: **no verdict changed**. One new advisory finding
 (`suppression.ungatedPhpmdRule` for a `@SuppressWarnings("PHPMD.CamelCasePropertyName")`
 in opalxrechnung); the other five reports have the same findings and gate effects.
+
+### `b-7.4.x` (merge of 2 November)
+
+The 7.4 line takes the trunk fixes of 1 November (above). PHPMD keeps running on this line below PHP 8.3, and its
+successors run from PHP 8.3 on, as before. A 7.3 shop is held to its own PHP minimum, 8.2 like 7.4's. Measured with
+six OPAL modules on OXID 7.4 (PHP 8.3 and 8.2) before and after the merge: **no verdict of the full gate changed**,
+and the PHPMD findings are unchanged where it runs (PHP 8.2). What a module CI sees comes from the trunk fixes:
+`tests.noTests` / `coverage.noTests` instead of a crash for a module without tests, `test_structure.issues` as
+objects in JSON, and coverage findings under `tools.coverage`.
 
 ### `b-7.4.x` (merge of 31 October)
 
