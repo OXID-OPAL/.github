@@ -112,7 +112,7 @@ names a stock PHPMD rule the gate does not check is advisory.
   it, and `runtime.phpVersionTooOld` says which OXID version the shop is checked for. AI agents now get the permitted
   migrate command for OXID 7.2–7.5 shops from the `state-changing-commands` workflow, and what view generation does
   to module columns. The MANUAL's PHPStan level, JSON report example and PHPMD comparisons are corrected. Merged into
-  `b-7.6.x` and `b-7.5.x`; `b-7.4.x` and `b-7.3.x` follow.
+  all four lines.
 
 - **The cross-module rules measure the module and the modules it declares** (#569). `structure.crossModuleTagActivationGate`
   and `phpstan.providerContractMissingAvailabilityGate` used to count a tag as consumed across modules whenever any module
