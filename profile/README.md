@@ -70,7 +70,7 @@ migrating to it, each on its own PHP** (a 7.4 shop runs the 7.5 line on PHP 8.2)
 | `b-7.6.x` | 7.6 (and 7.5) | 8.3+ | 12 | trunk |
 | `b-7.5.x` | 7.5 (and 7.4) | 8.3+ (8.2 for a 7.4 shop) | 11 or 12 | follows the trunk since 28 October; merged again **31 October** and **2 November** |
 | `b-7.4.x` | 7.4 (and 7.3) | 8.2+ | 11 | moved from the **2.8 engine to the v3 engine** on **31 October**; merged again **2 November** |
-| `b-7.3.x` | 7.3 (and 7.2) | 8.2+ | 11 | moved from the **v1 engine to the v3 engine** on **1 November** |
+| `b-7.3.x` | 7.3 (and 7.2) | 8.2+ | 11 | moved from the **v1 engine to the v3 engine** on **1 November**; merged again **2 November** |
 
 **PHPMD is bound to the line:** PHPMD 2.15 runs with its stock rules **only on the
 `b-7.4.x` and `b-7.3.x` lines, and only below PHP 8.3**. Nothing on PHP 8.3 or later
@@ -156,6 +156,13 @@ grow. This replaces the "last OXID 7.4-compatible release" note on v2.8.0 below.
   `extensionSignatureDrift`.
 - **Composer:** the line now requires the Codeception packages; a `composer update`
   installs six packages (Codeception modules, page objects and php-webdriver).
+
+### `b-7.3.x` (merge of 2 November)
+
+The 7.3 line takes the trunk's line-bound PHPMD rule and its texts. PHPMD keeps running on this line below PHP 8.3,
+and its successors run from PHP 8.3 on, as before. A 7.2 shop is held to its own PHP minimum, 8.2 like 7.3's.
+Measured with the five OPAL modules that install on OXID 7.3, on PHP 8.3 and PHP 8.2, before and after the merge:
+**no finding changed**, PHPMD's included. All four lines now run the same engine.
 
 ### `b-7.3.x` (merge of 1 November)
 
