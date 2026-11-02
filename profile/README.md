@@ -105,6 +105,13 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **Freya runs over HTTP only** (#583). The old stdio server had refused to serve since 2.9.0, so a `freya` entry that
+  `vendor/bin/freya --setup --stdio` wrote into `.mcp.json` pointed at a server that exited at once. That server and
+  the `--stdio` option are removed; `--setup --stdio` now stops with a message instead of writing a dead entry. If your
+  `.mcp.json` still has a stdio `freya` entry, run `vendor/bin/freya --setup` in the shop root, or register
+  `http://localhost:<port>/index.php?cl=freya_mcp` with `claude mcp add --transport http freya …`. Merged into
+  `b-7.6.x`; the other lines follow.
+
 - **The module list shows the right version** (#630). `metadata.php` still named 3.2.0 after the 4.0.0 release, so
   every shop's module list showed 3.2.0. It now names 4.0.0; a shop shows it after `composer update` of the quality
   tools (or `oe:module:install`). A new test fails the gate when the version, the CHANGELOG and the composer alias
