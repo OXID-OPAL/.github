@@ -114,7 +114,7 @@ names a stock PHPMD rule the gate does not check is advisory.
   exit 0); an existing `.mcp.json` that is no JSON object (e.g. a trailing comma) is left as it is with exit 1 (it used
   to be rewritten with only the `freya` entry, losing every other server); an unreadable or unwritable `.mcp.json` ends
   with a message and exit 1. If your `.mcp.json` points at `:80` and Freya does not connect, run
-  `vendor/bin/freya --setup` again (or pass `--url`). Merged into `b-7.6.x`; the other lines follow.
+  `vendor/bin/freya --setup` again (or pass `--url`). Merged into all four lines.
 
 - **Freya runs over HTTP only** (#583). The old stdio server had refused to serve since 2.9.0, so a `freya` entry that
   `vendor/bin/freya --setup --stdio` wrote into `.mcp.json` pointed at a server that exited at once. That server and
