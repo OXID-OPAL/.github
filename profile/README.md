@@ -105,6 +105,15 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **Advice and documentation corrected, verdicts unchanged** (DOC-1, #623). The advice of `tests.riskyTest` now says
+  to assert what the test exercises (`#[DoesNotPerformAssertions]` only for a test whose whole purpose is that the code
+  does not throw), and `coverage.belowThreshold` says to test the behaviour of the uncovered code, not to chase the
+  number. `structure.missingModuleOptionsKeys` no longer calls a key "missing" when another admin language file holds
+  it, and `runtime.phpVersionTooOld` says which OXID version the shop is checked for. AI agents now get the permitted
+  migrate command for OXID 7.2–7.5 shops from the `state-changing-commands` workflow, and what view generation does
+  to module columns. The MANUAL's PHPStan level, JSON report example and PHPMD comparisons are corrected. Merged into
+  `b-7.6.x`; the other lines follow.
+
 - **The cross-module rules measure the module and the modules it declares** (#569). `structure.crossModuleTagActivationGate`
   and `phpstan.providerContractMissingAvailabilityGate` used to count a tag as consumed across modules whenever any module
   installed next to the analysed one consumed it, declared or not. Now only the module and the OXID modules it declares
