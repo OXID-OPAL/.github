@@ -98,12 +98,20 @@ counts for the successor too. A suppression that names no PHPMD rule (or is writ
 in a form PHPMD ignores, e.g. a space before `(`) now **fails the gate**; one that
 names a stock PHPMD rule the gate does not check is advisory.
 
-### All lines (merges of 2 November, after `v4.0.0`)
+### All lines (merges of 2 and 3 November, after `v4.0.0`)
 
 - **Installed-package lookups skip PHPStan's own bundled packages** (#581). Once PHPStan's phar was loaded, a
   lookup could find PHPStan's copy of a package (e.g. `symfony/process`) instead of the shop's, or count a package
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
+
+- **The gate writes nothing into your module any more** (#644). QT started PHPUnit without a cache option, so every
+  `--test`, `--coverage` or full gate run left `.phpunit.cache/` (or `.phpunit.result.cache`) in the checked module,
+  where it could be committed by accident; and with `executionOrder="defects"` the cached results reordered the next
+  gate run by earlier failures, so the order depended on the run history. Both PHPUnit runs now pass
+  `--do-not-cache-result` and keep the coverage cache below the system temp directory. You may delete the
+  `.phpunit.cache/` or `.phpunit.result.cache` that earlier QT runs left in your module (your own PHPUnit runs may
+  still write there, as your phpunit.xml says). **No finding changes.** Merged into `b-7.6.x`; the other lines follow.
 
 - **`vendor/bin/freya --setup` writes the shop's own URL** (#639). It took the port from a docker-compose service
   named `web` and otherwise wrote `http://localhost:80/…`, so on OXID docker-eshop-sdk shops (own `PORT_SHOP`) and
