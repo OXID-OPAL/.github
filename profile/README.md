@@ -105,6 +105,17 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **`vendor/bin/freya --setup` writes the shop's own URL** (#639). It took the port from a docker-compose service
+  named `web` and otherwise wrote `http://localhost:80/…`, so on OXID docker-eshop-sdk shops (own `PORT_SHOP`) and
+  whenever it ran inside the container, the written `freya` entry did not answer. It now uses `--url=http://<host>:<port>/`
+  or the shop's `sShopURL` from `source/config.inc.php` (only that value is read), says where the URL came from and
+  whether Freya answered, and prints the matching `claude mcp add --scope user --transport http freya …` command.
+  **Behaviour changes:** without `--url` or a usable `sShopURL` it writes nothing and exits 1 (it used to write :80 and
+  exit 0); an existing `.mcp.json` that is no JSON object (e.g. a trailing comma) is left as it is with exit 1 (it used
+  to be rewritten with only the `freya` entry, losing every other server); an unreadable or unwritable `.mcp.json` ends
+  with a message and exit 1. If your `.mcp.json` points at `:80` and Freya does not connect, run
+  `vendor/bin/freya --setup` again (or pass `--url`). Merged into `b-7.6.x`; the other lines follow.
+
 - **Freya runs over HTTP only** (#583). The old stdio server had refused to serve since 2.9.0, so a `freya` entry that
   `vendor/bin/freya --setup --stdio` wrote into `.mcp.json` pointed at a server that exited at once. That server and
   the `--stdio` option are removed; `--setup --stdio` now stops with a message instead of writing a dead entry. If your
