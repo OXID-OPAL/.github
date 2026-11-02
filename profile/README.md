@@ -52,16 +52,34 @@ Writes `.mcp.json` to the shop root with a `streamable-http` entry pointing to
 
 ---
 
-## 🔁 Quality Tools — One Engine on Every Shop Line (branch heads, untagged)
+## 🔁 Quality Tools v4.0.0 — One Engine on Every Shop Line
 
-> **🔵 OXID 7.6 / 7.5 / 7.4 / 7.3** &bull; `b-7.6.x` → `b-7.5.x` → `b-7.4.x` → `b-7.3.x` &bull; no tag yet &bull; from 31 October 2026
+> **🔵 OXID 7.6 / 7.5 / 7.4 / 7.3** &bull; `b-7.6.x` → `b-7.5.x` → `b-7.4.x` → `b-7.3.x` &bull; tag `v4.0.0` on `b-7.6.x`, lines on branch heads &bull; 2 November 2026
 
 Module CIs that install Quality Tools from a **branch head** (`dev-b-7.x.x`) pick up
-the following changes the moment a line branch is merged. A tagged 3.x release for
-all lines follows when the series is complete.
+the following changes the moment a line branch is merged. The series is complete: the trunk `b-7.6.x` is tagged
+**[`v4.0.0`](https://github.com/OXID-eSales/oxid-quality-tools/releases/tag/v4.0.0)**, and the lines `b-7.5.x`,
+`b-7.4.x` and `b-7.3.x` carry the same engine as untagged branch heads.
 
-**What changes:** all shop lines now run **one engine** (the v3 engine from
-`b-7.6.x`); rule data decides which rules apply to which OXID and PHP version. Each
+### Release `v4.0.0` (2 November)
+
+A major release (semver). Breaking for module CIs and report consumers:
+
+- **Composer:** every branch aliases to **`4.x-dev`** (one Quality Tools version on every line). A module CI pinned
+  to `3.x-dev` or `^3.0@dev` of a branch no longer resolves it; require `^4.0@dev`, `4.x-dev` or the branch name
+  (`dev-b-7.x.x`).
+- **JSON report:** `test_structure.issues` is a list of objects instead of strings; new keys
+  (`summary.failed_checks`, `summary.advisory_violations`, `tools.tests`, `tools.coverage`, `tools.phpcbf`).
+- **Gate:** a module's own PHPStan config can no longer lower the gate's level or silence its run; `--coverage`
+  judges the tests of its PHPUnit run; a module without tests fails with `tests.noTests` / `coverage.noTests`; PHPMD
+  is bound to the line (below), and a shop below the PHP minimum of its OXID minor is stopped.
+- **Rule ids:** `admin.unknown` is removed; on the 7.3 line the PHPStan identifiers and sniff codes are the
+  trunk's, so ignores under the old ids stop matching; every counted finding names its rule id in every output.
+
+Details: [CHANGELOG](https://github.com/OXID-eSales/oxid-quality-tools/blob/v4.0.0/CHANGELOG.md).
+
+**What changes:** all shop lines now run **one engine** (the engine of `b-7.6.x`,
+released as 4.0.0); rule data decides which rules apply to which OXID and PHP version. Each
 line keeps its own shop and PHP constraints. Every line serves the OXID minor it targets **and the prior minor
 migrating to it, each on its own PHP** (a 7.4 shop runs the 7.5 line on PHP 8.2):
 
