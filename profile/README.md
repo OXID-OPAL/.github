@@ -98,6 +98,13 @@ counts for the successor too. A suppression that names no PHPMD rule (or is writ
 in a form PHPMD ignores, e.g. a space before `(`) now **fails the gate**; one that
 names a stock PHPMD rule the gate does not check is advisory.
 
+### All lines (merges of 2 November, after `v4.0.0`)
+
+- **Installed-package lookups skip PHPStan's own bundled packages** (#581). Once PHPStan's phar was loaded, a
+  lookup could find PHPStan's copy of a package (e.g. `symfony/process`) instead of the shop's, or count a package
+  as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
+  the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
+
 ### `b-7.6.x` (merges of 1 November)
 
 Four fix packages on the trunk. A module CI on `dev-b-7.6.x` gets them now, `b-7.3.x` gets them with its merge below,
