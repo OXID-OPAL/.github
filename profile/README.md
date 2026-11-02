@@ -105,6 +105,11 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **The module list shows the right version** (#630). `metadata.php` still named 3.2.0 after the 4.0.0 release, so
+  every shop's module list showed 3.2.0. It now names 4.0.0; a shop shows it after `composer update` of the quality
+  tools (or `oe:module:install`). A new test fails the gate when the version, the CHANGELOG and the composer alias
+  disagree. Merged into all four lines.
+
 - **Advice and documentation corrected, verdicts unchanged** (DOC-1, #623). The advice of `tests.riskyTest` now says
   to assert what the test exercises (`#[DoesNotPerformAssertions]` only for a test whose whole purpose is that the code
   does not throw), and `coverage.belowThreshold` says to test the behaviour of the uncovered code, not to chase the
