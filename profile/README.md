@@ -105,6 +105,16 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **The cross-module rules measure the module and the modules it declares** (#569). `structure.crossModuleTagActivationGate`
+  and `phpstan.providerContractMissingAvailabilityGate` used to count a tag as consumed across modules whenever any module
+  installed next to the analysed one consumed it, declared or not. Now only the module and the OXID modules it declares
+  in its composer.json `require` (directly or transitively) count, wherever they are installed. A finding can therefore
+  **vanish** (only an undeclared neighbour consumed the tag) or **appear** (a declared module installed in another vendor
+  directory consumes it). Both rules' finding texts now come from the rule data; the wording is unchanged. Measured
+  with the OPAL modules on OXID 7.6 and 7.5 (opalerpodoo with its declared modules, migrations run): **no finding
+  changes**, since none of them has a cross-module finding before or after. Merged into `b-7.6.x` and `b-7.5.x`;
+  `b-7.4.x` and `b-7.3.x` follow.
+
 ### `b-7.6.x` (merges of 1 November)
 
 Four fix packages on the trunk. A module CI on `dev-b-7.6.x` gets them now, `b-7.3.x` gets them with its merge below,
