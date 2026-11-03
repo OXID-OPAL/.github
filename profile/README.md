@@ -105,6 +105,14 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **A mistyped module id no longer runs other modules' metadata.php** (#668). For an id that is not in the shop's
+  module configuration (a typo, a module that is not installed), `qualitytools:check <id>` searched for the module by
+  including metadata.php files from vendor/ and the shop's modules/, so their code ran inside the gate; a file that
+  calls `exit` ended the run silently. The id is now read from each file without running it. **Behaviour change:** a
+  module whose `'id'` is a constant (e.g. `Module::MODULE_ID`) and that is not in the module configuration is no
+  longer found by its id; pass its directory instead: `qualitytools:check vendor/<vendor>/<package>`. Merged into
+  all four lines.
+
 - **`docblock.invalid` names the fix for an unresolved OXID parent everywhere** (#663). For an extension whose
   `*_parent` resolves through neither `@mixin` nor metadata.php `extend`, the check carried a fix text of its own
   that no report printed. The rule's fix suggestion now covers that case, so Freya, TOON, JSON, HTML, Markdown and
