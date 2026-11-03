@@ -98,12 +98,22 @@ counts for the successor too. A suppression that names no PHPMD rule (or is writ
 in a form PHPMD ignores, e.g. a space before `(`) now **fails the gate**; one that
 names a stock PHPMD rule the gate does not check is advisory.
 
-### All lines (merges of 2 and 3 November, after `v4.0.0`)
+### All lines (merges of 2 to 4 November, after `v4.0.0`)
 
 - **Installed-package lookups skip PHPStan's own bundled packages** (#581). Once PHPStan's phar was loaded, a
   lookup could find PHPStan's copy of a package (e.g. `symfony/process`) instead of the shop's, or count a package
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
+
+- **Test order per run: `--test-order=random|reverse`, `--test-order-seed=N`, and the order in every output** (#688).
+  The gate's PHPUnit runs always used the order of the module's phpunit.xml, so a test that depends on what an
+  earlier test left behind stayed hidden, and a random order set in phpunit.xml could not be repeated because its
+  seed was never reported. `--test-order` asks PHPUnit for another order for one run; `--test-order-seed` (only with
+  `random`, 0 to 2147483647) fixes the seed, and without it a seed is generated. Anything else is rejected before any
+  check runs. Every output now names the order the run had, where it came from, the seed of a random order
+  (`unknown` when PHPUnit printed none) and the options that repeat it; a failed or stopped run gets the next action
+  `repeat_test_order`. Orders, seed bounds and wording are data in the new `config/test-order.php`.
+  Merged into all four lines.
 
 - **PHPUnit time limit per run: `--phpunit-timeout`, and 600 s for a test-only run** (#681). A test-only run
   (`--test`) was stopped after a fixed 300 s, while the run with coverage got 600 s, so a suite that fit the
