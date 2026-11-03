@@ -105,6 +105,14 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **`template.unknownBlockOverride` counts only the modules your module requires** (#570). A block that your
+  template override adds was treated as known whenever any other installed module's override of the same parent
+  template defined it, so an unrelated module could hide a real unknown block. Now only the modules your module
+  requires in its composer.json (transitively, as installed) count, and the parent of a module-template extension
+  is looked up only among them. **Behaviour change:** your module CI can report an unknown block that an
+  unrelated installed module used to hide; and a module-template extension whose parent module you do not require
+  is no longer checked (require it to get the check). Merged into all four lines.
+
 - **Freya's `get_rule` shows the texts a finding of the rule carries** (#654). It used to show the rule's title,
   description and fix suggestion, but not what a finding of it will say. Now a "Finding texts" section lists each
   text verbatim with its key (e.g. `messages.unknown_id`, `advice.di_less`) and its placeholder style, so you or
