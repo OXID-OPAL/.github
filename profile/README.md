@@ -111,7 +111,7 @@ names a stock PHPMD rule the gate does not check is advisory.
   gate run by earlier failures, so the order depended on the run history. Both PHPUnit runs now pass
   `--do-not-cache-result` and keep the coverage cache below the system temp directory. You may delete the
   `.phpunit.cache/` or `.phpunit.result.cache` that earlier QT runs left in your module (your own PHPUnit runs may
-  still write there, as your phpunit.xml says). **No finding changes.** Merged into `b-7.6.x`; the other lines follow.
+  still write there, as your phpunit.xml says). **No finding changes.** Merged into all four lines.
 
 - **`vendor/bin/freya --setup` writes the shop's own URL** (#639). It took the port from a docker-compose service
   named `web` and otherwise wrote `http://localhost:80/…`, so on OXID docker-eshop-sdk shops (own `PORT_SHOP`) and
