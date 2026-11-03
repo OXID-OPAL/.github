@@ -105,6 +105,16 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **A tool stopped at its time limit says so; a PHPCS run without a report no longer passes** (#649). The PHPCS
+  check never read PHPCS's exit code, so a run that crashed, could not load its ruleset or hit its 120 s limit passed
+  with 0 findings. A PHPUnit run that hit its limit was reported as the crash "Failed to load test suites", and PHPStan
+  and PHPMD as "exited with code -1". Now they report `tests.timeout`, `coverage.timeout`, `phpstan.timeout`,
+  `phpmd.timeout` and `phpcs.timeout`, each with the seconds the tool ran, its limit and its last output. A PHPCS run
+  counts only with exit 0-3 and a JSON report, a PHPCBF run only with exit 0-7. Anything else is the blocking
+  `phpcs.runFailed`. **Behaviour change:** a module CI whose PHPCS run used to pass without a report now fails with
+  that finding; read the quoted output. The limits are unchanged (PHPUnit 300 s, or 600 s with coverage; PHPStan and
+  PHPMD 300 s; PHPCS and PHPCBF 120 s). Merged into all four lines.
+
 - **The gate writes nothing into your module any more** (#644). QT started PHPUnit without a cache option, so every
   `--test`, `--coverage` or full gate run left `.phpunit.cache/` (or `.phpunit.result.cache`) in the checked module,
   where it could be committed by accident; and with `executionOrder="defects"` the cached results reordered the next
