@@ -105,6 +105,13 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **`template.unknownBlockOverride` also checks `default` and `admin_twig` theme overrides** (#673). Only overrides
+  for apex were checked. twig-component uses a module's `extensions/themes/default/<path>` override for the active
+  theme when the module has none for it; such an override is now checked against apex, unless your module also
+  overrides that template for apex. An `extensions/themes/admin_twig/<path>` override is checked against the admin
+  theme. **Visible to module CIs:** an unknown block in such an override is now a finding. In the twelve QTdev shops
+  no existing `default` or `admin_twig` override has an unknown block. Merged into all four lines.
+
 - **A mistyped module id no longer runs other modules' metadata.php** (#668). For an id that is not in the shop's
   module configuration (a typo, a module that is not installed), `qualitytools:check <id>` searched for the module by
   including metadata.php files from vendor/ and the shop's modules/, so their code ran inside the gate; a file that
