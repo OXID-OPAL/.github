@@ -105,6 +105,12 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **Freya's `get_rule` shows the texts a finding of the rule carries** (#654). It used to show the rule's title,
+  description and fix suggestion, but not what a finding of it will say. Now a "Finding texts" section lists each
+  text verbatim with its key (e.g. `messages.unknown_id`, `advice.di_less`) and its placeholder style, so you or
+  your AI can match a finding to the rule's case. Fix texts that a finding prints (e.g. `runtime.phpVersionTooOld`)
+  are listed too. `list_rules` is unchanged. **No finding changes.** Merged into all four lines.
+
 - **A tool stopped at its time limit says so; a PHPCS run without a report no longer passes** (#649). The PHPCS
   check never read PHPCS's exit code, so a run that crashed, could not load its ruleset or hit its 120 s limit passed
   with 0 findings. A PHPUnit run that hit its limit was reported as the crash "Failed to load test suites", and PHPStan
