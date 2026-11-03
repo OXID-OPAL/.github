@@ -105,6 +105,11 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **`docblock.invalid` names the fix for an unresolved OXID parent everywhere** (#663). For an extension whose
+  `*_parent` resolves through neither `@mixin` nor metadata.php `extend`, the check carried a fix text of its own
+  that no report printed. The rule's fix suggestion now covers that case, so Freya, TOON, JSON, HTML, Markdown and
+  the console all show the same text. **No finding changes.** Merged into all four lines.
+
 - **`template.unknownBlockOverride` counts only the modules your module requires** (#570). A block that your
   template override adds was treated as known whenever any other installed module's override of the same parent
   template defined it, so an unrelated module could hide a real unknown block. Now only the modules your module
