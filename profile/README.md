@@ -105,6 +105,14 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **PHPUnit time limit per run: `--phpunit-timeout`, and 600 s for a test-only run** (#681). A test-only run
+  (`--test`) was stopped after a fixed 300 s, while the run with coverage got 600 s, so a suite that fit the
+  coverage run could fail `--test`. Both runs now get 600 s by default, and `--phpunit-timeout=<seconds>` (a whole
+  number from 1 to 3600) gives one run its own limit; anything else is rejected before any check runs. Defaults and
+  bounds are data in the new `config/tool-limits.php`. `tests.timeout` and `coverage.timeout` now say that the
+  stopped tests did not run their tearDown, so the shop may keep what they wrote, and name the option.
+  Merged into all four lines.
+
 - **AI-RULES: the attribute-route note in `module-lifecycle` is corrected** (#678). The "OXID 7.5 note" said that
   `oe:module:activate` fires `ClearShopCacheEvent` (only `oe:cache:clear` does), was served on the 7.3 and 7.4 lines
   as well, and listed a second, shorter lifecycle sequence. The note now covers OXID 7.5 and later only and points to
