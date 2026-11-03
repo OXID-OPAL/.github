@@ -105,6 +105,12 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **AI-RULES: the attribute-route note in `module-lifecycle` is corrected** (#678). The "OXID 7.5 note" said that
+  `oe:module:activate` fires `ClearShopCacheEvent` (only `oe:cache:clear` does), was served on the 7.3 and 7.4 lines
+  as well, and listed a second, shorter lifecycle sequence. The note now covers OXID 7.5 and later only and points to
+  `state-changing-commands`, which stays the one list of lifecycle commands. Text only; **no finding changes**.
+  Merged into all four lines.
+
 - **`template.unknownBlockOverride` also checks `default` and `admin_twig` theme overrides** (#673). Only overrides
   for apex were checked. twig-component uses a module's `extensions/themes/default/<path>` override for the active
   theme when the module has none for it; such an override is now checked against apex, unless your module also
