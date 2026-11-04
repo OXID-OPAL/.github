@@ -105,6 +105,20 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **PHPStan reports classes from packages the module does not declare** (#705). A module could use a class of any
+  installed package and pass, although a shop without that package fails. Every class use (new, extends, types,
+  static calls, instanceof, catch, attributes, PHPDoc types) must now come from the module itself, a package its
+  composer.json `require` names (transitively, as installed), the shop or PHP. The shop is the installed compilation
+  metapackage (else the core packages) without the modules a compilation ships, so another module counts only when
+  it is required; in tests/ the `require-dev` tree and the test frameworks count too. Any other package is the
+  blocking `phpstan.undeclaredPackageClass`; **fix: add the package to `require`**. A package named only under
+  `suggest` is the advisory `phpstan.optionalPackageClass` (guard its use); `phpstan.packageScopeFallback` notes a run
+  that could not read composer.json or installed.json. Eight OPAL modules on OXID 7.6 and 7.5 (and the two that
+  suggest packages on 7.5 EE): no new blocking finding, no exit code changed; the advisory appeared for opalordermerge
+  (19, graphqlite attributes) and, where visualcms is installed, opalaiimagemap (15). **Composer:** QT now requires
+  `oxid-esales/twig-component`, which its template check uses (7.6 `^2.8`, 7.5 `^2.7`, 7.4 `^2.6`, 7.3 `^2.5`; every
+  compilation already installs it). Merged into all four lines.
+
 - **Changed: PHPStan resolves extension parents only from the module and its declared dependencies** (#700). The
   PHPStan bootstrap read the metadata.php of every installed module, so a module that uses another
   module's extension class passed even when it does not require that module, and would break in a shop without it.
