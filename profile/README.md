@@ -105,6 +105,14 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **PHPMD's missing-import finding is no longer reported for a global class used outside a namespace** (#693).
+  In a file without a namespace (or in the bracketed global `namespace { }` block), `new ReflectionClass(…)` or
+  `new \ArrayObject()` was reported as `phpmd.missingImport`, although no `use` statement can import a global class
+  there. Such references are now left out; a namespaced class in that code (`\Vendor\Name`) is still reported,
+  because `use Vendor\Name;` fixes it. The case is named in the rule data (`not_reported` on `phpmd.missingImport`),
+  so Freya's `get_rule` shows it. PHPMD runs on the 7.4 and 7.3 lines below PHP 8.3. QT's own gate is now at
+  0 findings there as well. Merged into all four lines.
+
 - **Test order per run: `--test-order=random|reverse`, `--test-order-seed=N`, and the order in every output** (#688).
   The gate's PHPUnit runs always used the order of the module's phpunit.xml, so a test that depends on what an
   earlier test left behind stayed hidden, and a random order set in phpunit.xml could not be repeated because its
