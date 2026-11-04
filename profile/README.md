@@ -105,6 +105,15 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **A failing test run says when the module is not active in the shop** (#710). `--test` or `--coverage` against a
+  module that is installed but not activated failed by the hundreds (missing services, tables and templates) without
+  a word about the cause. The run now reads the module's activation state from the shop and, when tests failed or
+  errored, adds one advisory `tests.moduleInactive` (does not block the gate) and puts **`activate_module` first in
+  the next actions: `oe:module:activate <id>`, then the shop's state-changing commands** (Freya workflow). The run,
+  its counts, failure rows and exit code are unchanged; a green run, an active module or an unreadable state gets no
+  notice. Verified with opaltrackingstatus installed but not activated on OXID 7.6 and 7.3: the same 273 failure
+  rows plus exactly one notice. Merged into all four lines.
+
 - **PHPStan reports classes from packages the module does not declare** (#705). A module could use a class of any
   installed package and pass, although a shop without that package fails. Every class use (new, extends, types,
   static calls, instanceof, catch, attributes, PHPDoc types) must now come from the module itself, a package its
