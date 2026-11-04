@@ -105,6 +105,16 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **Changed: PHPStan resolves extension parents only from the module and its declared dependencies** (#700). The
+  PHPStan bootstrap read the metadata.php of every installed module, so a module that uses another
+  module's extension class passed even when it does not require that module, and would break in a shop without it.
+  The gate now reads the metadata.php of the analysed module and of the modules its composer.json `require` names
+  (transitively, as installed). Calling an inherited method of an undeclared module's extension class is now
+  PHPStan's `method.notFound`; **fix: add that module to `require`**. When the dependencies cannot be determined
+  (no readable composer.json, a resolver error), every installed module counts as before and the advisory
+  `phpstan.moduleScopeFallback` says so. Six OPAL modules on OXID 7.6 gave identical results before and after.
+  Merged into all four lines.
+
 - **PHPMD's missing-import finding is no longer reported for a global class used outside a namespace** (#693).
   In a file without a namespace (or in the bracketed global `namespace { }` block), `new ReflectionClass(…)` or
   `new \ArrayObject()` was reported as `phpmd.missingImport`, although no `use` statement can import a global class
