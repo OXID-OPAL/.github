@@ -105,6 +105,15 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **Tool time limits come from one data file, fit measured run times, and can be raised per run** (#715). PHPUnit
+  test and coverage runs were capped at 600 s; QT's own coverage run already took 472 s on 7.4 / PHP 8.2, so a
+  slower CI runner would have stopped an honest suite. Limits are now **1200 s for tests, 1440 s with coverage and
+  120 s for each PHPStan, PHPMD, PHPCS and PHPCBF run** (PHPStan and PHPMD were 300 s; values = measured maximum
+  on five shops × 3), all read from `config/tool-limits.php`. Each one can be replaced for a single run with
+  **`QUALITYTOOLS_LIMIT_PHPSTAN`, `_PHPMD`, `_PHPCS`, `_PHPCBF`, `_PHPUNIT_TEST` or `_PHPUNIT_COVERAGE`** (whole
+  seconds, 1 to 3600; anything else stops the run before it starts). Every override, `--phpunit-timeout` included,
+  is named in all reports and now also under the console header. Merged into all four lines.
+
 - **A failing test run says when the module is not active in the shop** (#710). `--test` or `--coverage` against a
   module that is installed but not activated failed by the hundreds (missing services, tables and templates) without
   a word about the cause. The run now reads the module's activation state from the shop and, when tests failed or
