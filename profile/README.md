@@ -105,6 +105,15 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **Unknown Twig functions and filters are findings** (#724). The template check accepted any function or filter
+  name, so a misspelled or unavailable one passed and only failed when the shop rendered the template; the three
+  `template.twigUnknown*` rules could never fire. QT now judges every function and filter name a template uses
+  against what is really available: **Twig itself, the shop's installed components (e.g. twig-component), the
+  module's own extensions and those of the modules it requires**. Any other name is a `template.twigUnknownFunction`
+  / `template.twigUnknownFilter` finding on its first line; an unknown tag is `template.twigUnknownTag`; severity
+  comes from the rule data (blocking). Measured on five OPAL modules: exactly one real finding, no false ones.
+  Merged into all four lines.
+
 - **Freya names only the migrate command of the line's own OXID minors** (#623). The state-changing commands and
   the quick reference listed every minor from 7.2 to 7.6, so an agent on a 7.3 shop also read the 7.6-only
   `oe:database:migrate`. The commands are now data (`config/oxid-commands.php`), and Freya fills in the line's
