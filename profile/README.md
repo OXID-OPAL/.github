@@ -8,7 +8,7 @@ Internal tools and modules for OXID eSales development.
 
 ## 🔮 Quality Tools — Freya MCP Server
 
-> Available since v2.1.0, **HTTP transport since v2.0** &bull; `b-7.4.x`
+> Available since v2.1.0, **HTTP transport since v2.0** &bull; on every line: `b-7.6.x`, `b-7.5.x`, `b-7.4.x`, `b-7.3.x`
 
 AI agents can now **browse the full quality rule catalog before writing code**,
 eliminating trial-and-error cycles with the quality gate.
@@ -51,6 +51,36 @@ Writes `.mcp.json` to the shop root with a `streamable-http` entry pointing to
 4. `qualitytools:check` → verify
 
 ---
+
+## 🧭 Default branch is now `b-7.6.x`
+
+> **🔵 OXID 7.6** &bull; `b-7.6.x` is the repository's default branch &bull; 5 November 2026
+
+The quality tools repository's default branch moved from `b-7.5.x` to `b-7.6.x`. A clone without a branch,
+a pull request without an explicit base and the repository front page now show the 7.6 line. Nothing changed
+in the code: all four lines keep the engine of `v4.0.0` and the merges listed below.
+
+**Why now.** The 7.6 line passed a stability run of the quality tools' own making, independent of any downstream
+release plan: 15 OPAL modules were selected so that together they exercise every engine and feature marker the
+tools react to (admin menus and templates, theme block overrides, tagged services across modules, migrations,
+metadata events and controllers, module and library dependencies, PHPUnit and Codeception suites, the known
+suppressions, the one legacy-structure module, the largest module). Each module ran through the full gate on an
+OXID 7.6 shop with `b-7.6.x` and on an OXID 7.5 shop with `b-7.5.x`, with the shop restored to its reference state
+after every run. Result: the normalised finding sets are identical on 14 of the 15 modules; the one difference is a
+single integration test of `opalformmanager` that asserts the client address, which OXID 7.6 resolves through the
+Symfony request instead of the server variables, so the test fails on 7.6 only. No crash and no wrong finding of
+the tools on either line. The module list lives in the repository as data and is reused for the next minor.
+
+**What to do.**
+
+- Module CIs keep their explicit constraint: `dev-b-7.6.x` for OXID 7.6 (and a 7.5 shop migrating to it),
+  `dev-b-7.5.x` for 7.5, `dev-b-7.4.x` for 7.4, `dev-b-7.3.x` for 7.3, each with `^4.0@dev` or `4.x-dev`.
+- Pull requests against the quality tools name their base branch; the default is the trunk `b-7.6.x`, the lines
+  are `b-7.5.x`, `b-7.4.x` and `b-7.3.x`.
+- Four OPAL modules could not be installed on either shop and were left out of the run: three require
+  `oxid-esales/graphql-base` 12 while the 7.5 and 7.6 shops carry 13, one is Enterprise-only.
+
+Details per line: [CHANGELOG](https://github.com/OXID-eSales/oxid-quality-tools/blob/b-7.6.x/CHANGELOG.md).
 
 ## 🔁 Quality Tools v4.0.0 — One Engine on Every Shop Line
 
