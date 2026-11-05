@@ -105,6 +105,12 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **No tracker ticket ids in shipped texts** (#738). Eight places, among them one rule description shown by Freya,
+  named a real Jira ticket. Each now names the pattern it means (a consumer that iterates tagged providers from
+  other modules without an activation or availability gate), and an Integration test keeps tracker-id shapes out
+  of `src/`, `config/`, `tests/` and `stubs/`. Required by the engineering handbook's rule R0004. **No finding
+  changes.** Merged into all four lines.
+
 - **The texts say what the gate analyses in `tests/`** (#733). The gate's PHPStan run never analyses a module's
   `tests/`, but the `phpstan.undeclaredPackageClass` description promised extra credit "in tests/" and
   `phpstan-oxid.neon` carried three ignore entries for test code that could never apply. The description now says
