@@ -105,6 +105,14 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **The texts say what the gate analyses in `tests/`** (#733). The gate's PHPStan run never analyses a module's
+  `tests/`, but the `phpstan.undeclaredPackageClass` description promised extra credit "in tests/" and
+  `phpstan-oxid.neon` carried three ignore entries for test code that could never apply. The description now says
+  the gate does not analyse `tests/`, the unreachable entries are gone, and MANUAL names the gate tools that skip
+  `tests/` (PHPStan, PHPMD, PHP_CodeSniffer, docblock check). Measured on QT and five OPAL modules: analysing tests
+  would add 4437 findings and block every module, with the test-scope credit changing none of them. **No finding
+  changes.** Merged into all four lines.
+
 - **Admin menu labels count every admin translation of the shop and of required modules** (#571). The admin
   translation checks credited only the module's own files and the shop's `lang.php`. They now also credit **every
   admin language file the shop core loads** (`help_lang.php`, `translit_lang.php`, theme `*_options.php`; the list is
