@@ -105,6 +105,14 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **Freya names only the migrate command of the line's own OXID minors** (#623). The state-changing commands and
+  the quick reference listed every minor from 7.2 to 7.6, so an agent on a 7.3 shop also read the 7.6-only
+  `oe:database:migrate`. The commands are now data (`config/oxid-commands.php`), and Freya fills in the line's
+  target and prior minor: **7.6 line: `oe-console oe:database:migrate` for 7.6 plus the script for 7.5; 7.5, 7.4
+  and 7.3 lines: `oe-eshop-db_migrate migrations:migrate` for both minors**. A new EE line says every `oe-console`
+  command takes `--shop-id=<id>`. QT's own suite fails when a line's minors have no data, and checks every listed
+  command against the installed shop. Checked live in Freya on 7.6, 7.5, 7.4 EE and 7.3. Merged into all four lines.
+
 - **Tool time limits come from one data file, fit measured run times, and can be raised per run** (#715). PHPUnit
   test and coverage runs were capped at 600 s; QT's own coverage run already took 472 s on 7.4 / PHP 8.2, so a
   slower CI runner would have stopped an honest suite. Limits are now **1200 s for tests, 1440 s with coverage and
