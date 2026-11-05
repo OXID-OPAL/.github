@@ -105,6 +105,14 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **Admin menu labels count every admin translation of the shop and of required modules** (#571). The admin
+  translation checks credited only the module's own files and the shop's `lang.php`. They now also credit **every
+  admin language file the shop core loads** (`help_lang.php`, `translit_lang.php`, theme `*_options.php`; the list is
+  rule data, `cust_lang.php` excluded) and **the admin language files and `module_options.php` of the modules a
+  module requires**; installed modules it does not require never count. **Key-shaped OXMENU labels are now checked**
+  like MAINMENU/SUBMENU (pattern in rule data); literal labels stay unchecked. Measured over 91 OPAL admin menus on
+  OXID 7.6 and 7.3: no finding changes. Merged into all four lines.
+
 - **Unknown Twig functions and filters are findings** (#724). The template check accepted any function or filter
   name, so a misspelled or unavailable one passed and only failed when the shop rendered the template; the three
   `template.twigUnknown*` rules could never fire. QT now judges every function and filter name a template uses
