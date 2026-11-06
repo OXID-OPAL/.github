@@ -135,6 +135,16 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **Texts claim no OXID version they cannot back; the MANUAL lists match the code** (#755, #756). Twelve places
+  said "OXID 7.3+", "7.4+ components", "OXID 7.6 best practices" or that "OXID 7.5 ships" the JWT and session
+  authentication components: the structure validator's docblocks and user-facing messages, the `--structure` option
+  text, README, MANUAL and AI-RULES. None of it was verifiable (the component installer exists since 6.5, the
+  `assets/` link since 7.0, the two components are standalone packages no compilation requires). The texts now
+  name what the tools check: the module structure standards, `assets/` linked into `out/`, and the packages as
+  optional. The MANUAL's `next_actions` list gains `repeat_test_order` and `upgrade_php`, and its PHPStan "Ignored
+  Patterns" name the real path globs of the gate's neon, pinned by an integration test. **No finding changes.**
+  Merged into all four lines.
+
 - **The package ships its LICENSE file** (#750). README and MANUAL pointed at a `LICENSE` file that did not exist.
   The file now carries the OXID-OPAL modules' license text ("OXID Modul & Komponenten-Lizenz 2023", byte-identical
   to the modules' copy); composer.json keeps `"license": "proprietary"`. The quality tools' module-structure score on
