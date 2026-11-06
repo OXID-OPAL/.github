@@ -135,6 +135,14 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **Structure recommendations are advisory findings in every output** (#771). The module-structure check built
+  recommendations (a missing LICENSE, tests/ or phpunit.xml, a services.yaml without the Extension exclusion, a
+  migration without a README note, a table without the module prefix, an admin menu pattern) as a separate list that
+  only JSON, Markdown and HTML showed, while five catalogue rules for exactly these cases were never reported. They
+  are now advisory findings of seven rules (two new, five that came alive) with their texts in rule data, rendered in
+  TOON, JSON, Markdown, Human and HTML alike and documented by Freya as advisory. The JSON `recommendations` key stays
+  empty for one release. Score and gate unchanged. Merged into all four lines.
+
 - **One fix text per finding, from the catalogue** (#766). The docblock, template and structure checks built
   per-finding fix texts in PHP that no output ever showed; the rule catalogue's text is now the one fix in TOON,
   JSON, Markdown, Human and HTML. Four catalogue texts were widened for the cases those PHP texts named
