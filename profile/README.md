@@ -128,12 +128,21 @@ counts for the successor too. A suppression that names no PHPMD rule (or is writ
 in a form PHPMD ignores, e.g. a space before `(`) now **fails the gate**; one that
 names a stock PHPMD rule the gate does not check is advisory.
 
-### All lines (merges of 2 to 4 November, after `v4.0.0`)
+### All lines (merges of 2 to 6 November, after `v4.0.0`)
 
 - **Installed-package lookups skip PHPStan's own bundled packages** (#581). Once PHPStan's phar was loaded, a
   lookup could find PHPStan's copy of a package (e.g. `symfony/process`) instead of the shop's, or count a package
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
+
+- **Admin-theme and storefront header overrides are no longer cross-context findings** (#745).
+  `template.crossContextInheritance` accepted any directory before an admin base name, so a storefront override
+  extending apex's `layout/header.html.twig` was a blocking "Extends admin base layout" finding, and the rule also
+  fired on overrides of the admin theme (`views/twig/extensions/themes/admin_twig/`), where extending an admin base
+  is correct. The admin bases now match only as the admin theme names them (its root and `popups/headitem`), and
+  admin_twig overrides count as admin templates for this rule and for `template.adminFunctionInStorefront`. Rule
+  data only. Measured over 137 OXID-OPAL clones: the one live finding (an apex `layout/header.html.twig` override)
+  is gone, nothing else changes. Merged into all four lines.
 
 - **No tracker ticket ids in shipped texts** (#738). Eight places, among them one rule description shown by Freya,
   named a real Jira ticket. Each now names the pattern it means (a consumer that iterates tagged providers from
