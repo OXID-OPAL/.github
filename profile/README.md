@@ -135,6 +135,14 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **One fix text per finding, from the catalogue** (#766). The docblock, template and structure checks built
+  per-finding fix texts in PHP that no output ever showed; the rule catalogue's text is now the one fix in TOON,
+  JSON, Markdown, Human and HTML. Four catalogue texts were widened for the cases those PHP texts named
+  (`{@inheritDoc}` versus a native type, a missing class docblock, a broken symlink, a Twig extension that is not
+  available), the deprecated-path messages carry their migration step, and the dead HTML advice branch is gone.
+  Measured on a real module: the same 545 findings before and after, 57 of them now carrying their catalogue fix in
+  every output. **No finding count changes.** Merged into all four lines.
+
 - **A file-reading test leaves the Unit suite** (#761). `LineTargetTest` wrote temporary composer.json files and
   so broke the rule that unit tests do no filesystem IO; it now runs in the Integration suite, and the value path
   stays covered in the Unit suite. The sweep behind it found the same pattern in 71 more unit test files, queued
