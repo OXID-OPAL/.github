@@ -135,6 +135,12 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **The package ships its LICENSE file** (#750). README and MANUAL pointed at a `LICENSE` file that did not exist.
+  The file now carries the OXID-OPAL modules' license text ("OXID Modul & Komponenten-Lizenz 2023", byte-identical
+  to the modules' copy); composer.json keeps `"license": "proprietary"`. The quality tools' module-structure score on
+  their own package goes from 82 to 100, since LICENSE was the one recommended file missing. **No finding changes**
+  for modules. Merged into all four lines.
+
 - **Admin-theme and storefront header overrides are no longer cross-context findings** (#745).
   `template.crossContextInheritance` accepted any directory before an admin base name, so a storefront override
   extending apex's `layout/header.html.twig` was a blocking "Extends admin base layout" finding, and the rule also
