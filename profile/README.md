@@ -135,6 +135,15 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **Declared modules' templates resolve by module id; undeclared ones no longer pass** (#776, #777). The template
+  linter registers a module and its declared modules as Twig namespaces under their module ids, as the shop's own
+  template resolver does, so a `{% use '@<module id>/…' %}` of a declared module (or of the module itself) compiles,
+  while the former scan of every module directory without a namespace, which let an undeclared module's template pass,
+  is gone. `template.twigParentMissing` now says what is checked: a `{% use %}` name, since `{% extends %}` and
+  `{% include %}` resolve at render time. Measured on four OPAL modules with their declared dependencies installed:
+  identical results. The repository's own CLAUDE.md gate command names a placeholder service and shop root instead of
+  one machine's path. Merged into all four lines.
+
 - **Structure recommendations are advisory findings in every output** (#771). The module-structure check built
   recommendations (a missing LICENSE, tests/ or phpunit.xml, a services.yaml without the Extension exclusion, a
   migration without a README note, a table without the module prefix, an admin menu pattern) as a separate list that
