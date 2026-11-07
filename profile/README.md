@@ -135,6 +135,13 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **Admin template references are looked up in the module their id names** (#782). The admin structure check
+  stripped the `@<module id>/` prefix of a controller's template reference and looked in the module's own
+  `views/twig`, so a declared module's template was reported missing and an undeclared module's reference passed
+  whenever the module itself shipped a file of that name. References now resolve in the module the id names, through
+  the same namespace mapping the template linter uses; an undeclared id is a finding, and the finding texts live in rule
+  data. Measured on four OPAL modules with their declared dependencies: identical results. Merged into all four lines.
+
 - **Declared modules' templates resolve by module id; undeclared ones no longer pass** (#776, #777). The template
   linter registers a module and its declared modules as Twig namespaces under their module ids, as the shop's own
   template resolver does, so a `{% use '@<module id>/…' %}` of a declared module (or of the module itself) compiles,
