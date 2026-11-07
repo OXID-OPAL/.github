@@ -135,6 +135,15 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **Container locator rules see the services of declared modules and components** (#787). The two rules on
+  `ContainerFacade::get()` / `ContainerFactory::getInstance()->getContainer()->get()` looked up a service id only
+  in the module's own `services.yaml`, so a public service of a declared module or oxideshop-component package got
+  the "not statically analysed" advisory and a private one went unreported. They now look in the module, then in the
+  modules and components it declares; a declared package's private service is the blocking error it is at runtime,
+  with advice to inject it through one of the module's own services. Measured on an OPAL module with a declared
+  component: five advisories become two (the remaining two are core services). On 7.3–7.5 only `services.yaml`
+  counts. Merged into all four lines.
+
 - **Admin template references are looked up in the module their id names** (#782). The admin structure check
   stripped the `@<module id>/` prefix of a controller's template reference and looked in the module's own
   `views/twig`, so a declared module's template was reported missing and an undeclared module's reference passed
