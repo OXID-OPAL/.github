@@ -135,6 +135,13 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **Container locator rules see the shop core's services, in the container's own order** (#792). The core's DI
+  files were never read, so every core service fetched through the locator in a place without constructor injection
+  got the "not statically analysed" advisory, and a private one went unreported. The rules now read the installed
+  editions' DI files (EE, PE and CE, as rule data) and look a service up in the order the shop's container uses:
+  declared components, the module itself, declared modules, then the core. A private core service is the blocking
+  error it is at runtime. Measured on three OPAL modules: four advisories become zero. Merged into all four lines.
+
 - **Container locator rules see the services of declared modules and components** (#787). The two rules on
   `ContainerFacade::get()` / `ContainerFactory::getInstance()->getContainer()->get()` looked up a service id only
   in the module's own `services.yaml`, so a public service of a declared module or oxideshop-component package got
