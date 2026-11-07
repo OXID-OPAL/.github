@@ -135,6 +135,13 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **The quality tools' own tests are cleaned up, and the core-import case is pinned by a test** (#797, #798).
+  PHPStan, run over the quality tools' own tests, found 28 defects: wrong constructor calls, `glob()` loops
+  without a guard against `false`, dead code after `fail()`, and unused helpers. All 28 are fixed. None of them
+  could stop a test from failing, and tests/ stays outside the gate's PHPStan scope. A new Integration test pins
+  that services from the core's imported bootstrap files count as core services, with their public/private
+  visibility (#792). **No finding changes.** Merged into all four lines.
+
 - **Container locator rules see the shop core's services, in the container's own order** (#792). The core's DI
   files were never read, so every core service fetched through the locator in a place without constructor injection
   got the "not statically analysed" advisory, and a private one went unreported. The rules now read the installed
