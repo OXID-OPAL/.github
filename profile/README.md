@@ -135,6 +135,13 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **The suppression inventory records markers after code, and a `phpcs:disable` by its reach** (#808). A marker
+  that followed code on its line (`$x; // @phpstan-ignore-line`, `…; // phpcs:ignore`) was taken for text inside a
+  string and never recorded, in every module. Markers are now judged by the PHP tokenizer: inside a comment they
+  count, inside a string they do not. A `phpcs:disable` without `phpcs:enable` is recorded as file-wide, with a later
+  enable as a block; record scopes are unchanged, so existing baselines keep matching. Measured on 48 OPAL modules:
+  8 trailing markers in 2 modules are now recorded, nothing lost, no gate state changes. Merged into all four lines.
+
 - **The temp cache directories belong to the user running the check** (#803). PHPUnit's and PHPStan's cache
   directories below the system temp directory were only named, never owned: an existing directory was used as
   found, whoever owned it, so another local user could seed a coverage or PHPStan cache that decides findings; when
