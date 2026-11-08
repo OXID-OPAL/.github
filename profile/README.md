@@ -135,6 +135,14 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **A `phpcs:ignore` / `phpcs:disable` record targets the codes on the marker's own line** (#813). The pattern
+  read past the end of the line, so a bare marker took the next line of code as its target rule, and a marker in a
+  block comment or with a note kept the `*/` or the note in it; the target is part of the baseline fingerprint, so
+  such a record changed whenever the following line moved. The target is now the code list as PHP_CodeSniffer reads
+  it, and a phpcs marker counts only where PHP_CodeSniffer acts on it: at the start of its comment text, in any case,
+  `@phpcs:` included. Measured on 48 OPAL modules: two records change their target to none, nothing else moves.
+  Merged into all four lines.
+
 - **The suppression inventory records markers after code, and a `phpcs:disable` by its reach** (#808). A marker
   that followed code on its line (`$x; // @phpstan-ignore-line`, `…; // phpcs:ignore`) was taken for text inside a
   string and never recorded, in every module. Markers are now judged by the PHP tokenizer: inside a comment they
