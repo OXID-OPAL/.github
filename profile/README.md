@@ -135,6 +135,16 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **The temp cache directories belong to the user running the check** (#803). PHPUnit's and PHPStan's cache
+  directories below the system temp directory were only named, never owned: an existing directory was used as
+  found, whoever owned it, so another local user could seed a coverage or PHPStan cache that decides findings; when
+  PHPUnit could not create its directory it silently wrote into the module's own cache directory (measured: 148
+  files). The tools now create these directories themselves with mode 0700 and accept an existing one only when it
+  is owned by the running user and not writable by others; otherwise the test, coverage or PHPStan check reports
+  `runtime.unsafeTempDirectory` and that tool does not run. Measured on OXID 7.6 with a foreign-owned directory:
+  exit 0 before, the finding and exit 1 after, nothing written. **No finding changes on a clean host.** Merged into
+  all four lines.
+
 - **The quality tools' own tests are cleaned up, and the core-import case is pinned by a test** (#797, #798).
   PHPStan, run over the quality tools' own tests, found 28 defects: wrong constructor calls, `glob()` loops
   without a guard against `false`, dead code after `fail()`, and unused helpers. All 28 are fixed. None of them
