@@ -135,6 +135,12 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **The suppression inventory records `phpcs:ignoreFile`** (#818). A `phpcs:ignoreFile` makes PHP_CodeSniffer drop
+  every finding of its file, yet no inventory pattern recorded it, so a whole-file suppression appeared in no report
+  and no governance saw it. It is now a file-wide record in the `phpcs:ignore` channel, over-broad like a
+  `phpcs:disable` block. The legacy `@codingStandardsIgnore*` forms stay unrecorded: PHP_CodeSniffer 4 no longer
+  reads them. Measured on 48 OPAL modules: no occurrence today, **no finding changes**. Merged into all four lines.
+
 - **A `phpcs:ignore` / `phpcs:disable` record targets the codes on the marker's own line** (#813). The pattern
   read past the end of the line, so a bare marker took the next line of code as its target rule, and a marker in a
   block comment or with a note kept the `*/` or the note in it; the target is part of the baseline fingerprint, so
