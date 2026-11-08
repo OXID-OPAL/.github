@@ -135,6 +135,13 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **Advice for 15 native PHPStan and PHP_CodeSniffer checks** (#838). Since the reports stopped inventing hints
+  (#833), a native finding such as `return.type` or a too-long line showed no advice anywhere. The 14 PHPStan core
+  identifiers and the PSR-12 line-length check that our runs produce are now catalogue rules with a description of
+  what the tool reports and the quality tools' own fix advice, written fresh against the tool documentation; the old
+  texts were not reused, six of them had steered toward suppression. The advice appears in every output and in
+  Freya (293 rules). Gate behaviour is unchanged. Merged into all four lines.
+
 - **The HTML and Markdown reports no longer invent fix hints** (#833). A finding whose rule had no advice got a hint
   from a 48-key table in the code, matched by substring, and a generic "review OXID best practices" paragraph when
   nothing matched; measured, 31 keys matched nothing any more and every producing rule already carries its own
