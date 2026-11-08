@@ -135,6 +135,14 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **The HTML and Markdown reports no longer invent fix hints** (#833). A finding whose rule had no advice got a hint
+  from a 48-key table in the code, matched by substring, and a generic "review OXID best practices" paragraph when
+  nothing matched; measured, 31 keys matched nothing any more and every producing rule already carries its own
+  advice, so every native PHPStan or PHPCS finding showed boilerplate in HTML and Markdown and nothing elsewhere.
+  Now every output shows the same: the rule's advice, or none, and the HTML item leaves out its empty "How to fix"
+  line. The 17 native checks that had a useful text get it back as rule data in a follow-up. **No finding changes.**
+  Merged into all four lines.
+
 - **Rule `structure.blockNaming` is removed** (#828). It said certification requires the `block` names in
   metadata.php to carry the module id, but its check was dropped in 2.4.0 as a false positive, and the rule stayed
   in the catalogue without a producer: the `block` field names the parent template's block, which a module cannot
