@@ -135,6 +135,14 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **PHPStan resolves PHP_CodeSniffer's classes in a module that ships sniffs** (#823). PHP_CodeSniffer declares no
+  Composer autoload, so the gate's PHPStan run reported a sniff's `Sniff` interface as unknown, non-ignorably. The
+  gate's bootstrap now loads PHP_CodeSniffer's classes by namespace when the shop installs it, for any module. On
+  the way, four typing slips in the quality tools' own rule classes were cleaned up; none changed a finding. The
+  measurement behind it: the quality tools' own sniff and rule directories were excluded from their own PHPStan
+  scope, and lifting that shows 120 findings, 111 after this change; the remaining ones are queued and the
+  exclusion falls when they are gone. **No finding changes.** Merged into all four lines.
+
 - **The suppression inventory records `phpcs:ignoreFile`** (#818). A `phpcs:ignoreFile` makes PHP_CodeSniffer drop
   every finding of its file, yet no inventory pattern recorded it, so a whole-file suppression appeared in no report
   and no governance saw it. It is now a file-wide record in the `phpcs:ignore` channel, over-broad like a
