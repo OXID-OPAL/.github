@@ -135,6 +135,13 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **Rule `structure.blockNaming` is removed** (#828). It said certification requires the `block` names in
+  metadata.php to carry the module id, but its check was dropped in 2.4.0 as a false positive, and the rule stayed
+  in the catalogue without a producer: the `block` field names the parent template's block, which a module cannot
+  rename, and the Twig lines ignore the key. Freya now serves 278 rules; the 7.4 parity list records the removal with
+  its reason. Measured on 48 OPAL modules: no `blocks[]` entries, no references, **no finding changes**. Merged
+  into all four lines.
+
 - **PHPStan resolves PHP_CodeSniffer's classes in a module that ships sniffs** (#823). PHP_CodeSniffer declares no
   Composer autoload, so the gate's PHPStan run reported a sniff's `Sniff` interface as unknown, non-ignorably. The
   gate's bootstrap now loads PHP_CodeSniffer's classes by namespace when the shop installs it, for any module. On
