@@ -135,6 +135,13 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **The finding texts of 12 PHPStan rules are rule data** (#848). Sixteen texts that name what a finding is
+  about, from "extends X directly" to "iterates over a constructor-injected iterable without an activation call",
+  were composed in the detector classes; Freya could not show them and the rule-data drift test could not guard
+  them. They now sit in the rules' data and are read from there; every rendered text is byte-identical before and
+  after, so **no finding changes**. Freya lists them under the rules. Three more areas follow the same way.
+  Merged into all four lines.
+
 - **The HTML report no longer adds its own hints to failing tests** (#843). A JSON of 21 message patterns gave each
   failing test a hint in HTML only; measured, nine of ten failures got the default, which told the reader to run
   PHPUnit directly outside the gate, and one hint recommended loosening an assertion, against the test rule's own
