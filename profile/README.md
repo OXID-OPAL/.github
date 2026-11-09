@@ -135,6 +135,12 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **The finding texts of the coverage, complexity and suppression governance checks are rule data** (#853). Eleven
+  texts, from "Coverage x% is below threshold y%" to "Net-new suppression … is not in the accepted baseline", were
+  composed in the check classes; they now sit in the data of their twelve rules and are read through one reader.
+  Every constructed text is byte-identical before and after, so **no finding changes**. Freya lists them under the
+  rules. Second of four slices after #848. Merged into all four lines.
+
 - **The finding texts of 12 PHPStan rules are rule data** (#848). Sixteen texts that name what a finding is
   about, from "extends X directly" to "iterates over a constructor-injected iterable without an activation call",
   were composed in the detector classes; Freya could not show them and the rule-data drift test could not guard
