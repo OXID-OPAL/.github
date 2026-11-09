@@ -135,6 +135,14 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **Structure advisories accept the PHPUnit configuration where the test run looks, and an admin-only
+  `views/`** (#856). The structure standards checked `phpunit.xml` at the module root only, while the test runner
+  accepts it in four places; 33 of 48 OPAL modules keep it in `tests/` and got two advisories telling them to create
+  a file they have. Admin-only modules got a third for a missing `views/twig/`. The accepted locations are now one
+  list in the standards data, read by the standards and the runner alike; `views/` accepts either template folder.
+  The JSON report gives structure findings their rule's severity instead of a fixed ERROR. Measured: 69 wrong
+  advisories gone, nothing added. Merged into all four lines.
+
 - **The finding texts of the coverage, complexity and suppression governance checks are rule data** (#853). Eleven
   texts, from "Coverage x% is below threshold y%" to "Net-new suppression … is not in the accepted baseline", were
   composed in the check classes; they now sit in the data of their twelve rules and are read through one reader.
