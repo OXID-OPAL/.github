@@ -135,6 +135,11 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **The finding texts of the template and docblock checks are rule data** (#863). Ten texts, from "Add class
+  docblock for X" to "File path … does not match extends path …", were composed in the check classes; they now sit
+  in the data of their six rules and are read from there. Every rendered text is byte-identical before and after,
+  measured over the whole test suite and 811 findings on 48 OPAL modules, so **no finding changes**. Freya lists
+  them under the rules. Third of four slices after #848 and #853. Merged into all four lines.
 - **Structure advisories accept the PHPUnit configuration where the test run looks, and an admin-only
   `views/`** (#856). The structure standards checked `phpunit.xml` at the module root only, while the test runner
   accepts it in four places; 33 of 48 OPAL modules keep it in `tests/` and got two advisories telling them to create
