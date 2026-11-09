@@ -135,6 +135,13 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **Template findings carry their rule's severity** (#868). The template check wrote some severities in its code, and
+  the JSON, HTML and Markdown reports gave every template finding of a run the same severity: error when the run had a
+  template error, else warning. Each finding now takes its rule's severity from the rule data, in the check and in every
+  report. Measured over 48 OPAL modules: 39 findings of 2 modules (data-testid, inline style) read warning instead of
+  error in the reports; **no check result changes**. Two rule-data corrections ride along: a missing `{% use %}` parent
+  is a warning (it may come from a theme or module not installed here), a template Twig cannot load is an error. Merged
+  into all four lines.
 - **The finding texts of the template and docblock checks are rule data** (#863). Ten texts, from "Add class
   docblock for X" to "File path … does not match extends path …", were composed in the check classes; they now sit
   in the data of their six rules and are read from there. Every rendered text is byte-identical before and after,
