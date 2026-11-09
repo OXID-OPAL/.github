@@ -135,6 +135,12 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **The finding texts of the test structure check, the crash diagnostics, the underscore-prefix sniff and two
+  structure findings are rule data** (#873). Ten texts, from "No phpunit.xml configuration found" to the crash
+  diagnosis that quotes the last output line, were composed in the check and service classes; they now sit in the data
+  of their five rules and are read from there. Every rendered text is byte-identical before and after, measured over
+  the whole test suite and a structure run on 48 OPAL modules, so **no finding changes**. Freya lists them under the
+  rules. Fourth and last slice after #848, #853 and #863. Merged into all four lines.
 - **Template findings carry their rule's severity** (#868). The template check wrote some severities in its code, and
   the JSON, HTML and Markdown reports gave every template finding of a run the same severity: error when the run had a
   template error, else warning. Each finding now takes its rule's severity from the rule data, in the check and in every
