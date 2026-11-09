@@ -135,6 +135,12 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **The HTML report no longer adds its own hints to failing tests** (#843). A JSON of 21 message patterns gave each
+  failing test a hint in HTML only; measured, nine of ten failures got the default, which told the reader to run
+  PHPUnit directly outside the gate, and one hint recommended loosening an assertion, against the test rule's own
+  advice. The hints are gone; a failing test shows its message and the advice of `tests.failure`, the same in every
+  output. **No finding changes.** Merged into all four lines.
+
 - **Advice for 15 native PHPStan and PHP_CodeSniffer checks** (#838). Since the reports stopped inventing hints
   (#833), a native finding such as `return.type` or a too-long line showed no advice anywhere. The 14 PHPStan core
   identifiers and the PSR-12 line-length check that our runs produce are now catalogue rules with a description of
