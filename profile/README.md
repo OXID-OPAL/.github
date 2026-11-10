@@ -135,6 +135,10 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **The template name check reads its pattern from the rule data only** (#922). The scanner no longer keeps an older
+  copy of the pattern in code as a silent fallback; that copy was never used with the shipped rules and would have
+  missed `$this->` assignments. Rule data without the pattern now fails loudly. **No output changes.** Merged into
+  all four lines.
 - **A test keeps the texts about where PHPMD runs in line with the data** (#917). The rule descriptions and the
   documents that say "the 7.4 and 7.3 lines, below PHP 8.3" are now checked against the PHPMD runtime data, so the
   next change of the PHPMD lines fails the suite until every text follows. **No output changes.** Merged into all four
