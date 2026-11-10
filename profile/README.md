@@ -135,6 +135,13 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **Template warnings are advisory** (#878). The template check failed only on an error-severity finding while every
+  report labelled findings by their rule's `blocks_gate`, which no template warning rule set — so a warning that left
+  the check passed was shown as a blocking finding. The seven template warning rules now declare `blocks_gate: false`
+  and the template check decides by that flag like the structure, PHPStan, PHPMD and metrics checks; a test keeps
+  severity and gate flag in line. Measured on 48 OPAL modules: **no check result changes**; 40 warning findings
+  (data-testid, inline style) now read as advisory in the JSON, HTML, Markdown and console outputs. Merged into all
+  four lines.
 - **The finding texts of the test structure check, the crash diagnostics, the underscore-prefix sniff and two
   structure findings are rule data** (#873). Ten texts, from "No phpunit.xml configuration found" to the crash
   diagnosis that quotes the last output line, were composed in the check and service classes; they now sit in the data
