@@ -135,6 +135,10 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **`template.storefrontHelpersInAdmin` is retired** (#906). It warned against `{{ script() }}` / `{{ style() }}` in admin
+  templates although OXID's own admin theme uses them on every line and a relative include resolves against the admin
+  theme in admin. It found nothing on 48 OPAL modules; `template.rawAssetInclusion` now says admin templates may use
+  either form. **No finding changes.** Merged into all four lines.
 - **Freya names the installed release in its MCP handshake** (#901). The `initialize` answer reported
   `serverInfo.version` 2.0.0 for every release since March; it now names the `version` of the module's metadata.php
   (4.0.0 today, the number the shop's module list shows), or `unknown` when it cannot be read; a release test keeps it
