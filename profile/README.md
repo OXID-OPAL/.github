@@ -135,6 +135,11 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **The Markdown report labels advisory template and test-structure findings** (#883). Its Template Issues and Test
+  Structure Issues lists printed an advisory finding like a blocking one while the tool and structure sections already
+  labelled and counted them. Each advisory row now carries "Advisory: does not fail the gate" and the heading counts
+  the advisory rows. Measured on 48 OPAL modules: 40 template findings in 3 modules gain the line; **no other output
+  changes**. Merged into all four lines.
 - **Template warnings are advisory** (#878). The template check failed only on an error-severity finding while every
   report labelled findings by their rule's `blocks_gate`, which no template warning rule set — so a warning that left
   the check passed was shown as a blocking finding. The seven template warning rules now declare `blocks_gate: false`
