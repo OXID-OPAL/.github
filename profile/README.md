@@ -135,6 +135,10 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **Where PHPMD runs and when the core reads bootstrap-services.yaml are data** (#912). The PHPMD lines (7.3, 7.4)
+  and PHP bound (8.3), and the core version that loads `bootstrap-services.yaml` (7.6.0), were code constants, and
+  the PHPMD fact was written by hand into seven texts (help, labels, Freya's schema); all now come from config data.
+  **No output changes.** Merged into all four lines.
 - **`template.storefrontHelpersInAdmin` is retired** (#906). It warned against `{{ script() }}` / `{{ style() }}` in admin
   templates although OXID's own admin theme uses them on every line and a relative include resolves against the admin
   theme in admin. It found nothing on 48 OPAL modules; `template.rawAssetInclusion` now says admin templates may use
