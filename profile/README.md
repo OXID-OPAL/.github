@@ -135,6 +135,10 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **Freya names the installed release in its MCP handshake** (#901). The `initialize` answer reported
+  `serverInfo.version` 2.0.0 for every release since March; it now names the `version` of the module's metadata.php
+  (4.0.0 today, the number the shop's module list shows), or `unknown` when it cannot be read; a release test keeps it
+  in line with the CHANGELOG. Merged into all four lines.
 - **Waiver scopes name what the waiver applies to, and their fingerprints no longer collide** (#592). A static-call
   waiver's scope was its bare method and a SQL waiver's scope its path, so 103 waiver records on 48 OPAL modules
   shared 44 fingerprints and a new waiver on an already-accepted method was never reported net-new. The scope now
