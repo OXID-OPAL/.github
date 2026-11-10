@@ -135,6 +135,12 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **Waiver scopes name what the waiver applies to, and their fingerprints no longer collide** (#592). A static-call
+  waiver's scope was its bare method and a SQL waiver's scope its path, so 103 waiver records on 48 OPAL modules
+  shared 44 fingerprints and a new waiver on an already-accepted method was never reported net-new. The scope now
+  carries class, method, path and markers; every record has its own fingerprint; an old baseline entry accepts its
+  record once more by the old scope. 56 waivers that were accepted only through a collision now read as advisory
+  net-new; **no gate result changes**. Merged into all four lines.
 - **One indent for the Markdown advisory line** (#888). The Structure Violations list indented "Advisory: does not fail
   the gate" under the finding's rule line while every other section prints it beside rule and advice; it now does
   too. Measured on 48 OPAL modules: 57 lines in 28 modules move by two spaces; **no other output changes**. Merged into
