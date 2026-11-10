@@ -135,6 +135,10 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **One indent for the Markdown advisory line** (#888). The Structure Violations list indented "Advisory: does not fail
+  the gate" under the finding's rule line while every other section prints it beside rule and advice; it now does
+  too. Measured on 48 OPAL modules: 57 lines in 28 modules move by two spaces; **no other output changes**. Merged into
+  all four lines.
 - **The Markdown report labels advisory template and test-structure findings** (#883). Its Template Issues and Test
   Structure Issues lists printed an advisory finding like a blocking one while the tool and structure sections already
   labelled and counted them. Each advisory row now carries "Advisory: does not fail the gate" and the heading counts
