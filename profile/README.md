@@ -135,6 +135,10 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **Freya tells coding agents how to write a commit message** (#947). A new workflow, `commit-messages`, states
+  handbook rule R0002: English, short subject and body, the Jira ticket id with a colon as prefix or the issue number
+  at the end of the subject, and no `Co-Authored-By` or other attribution trailer, also on agent commits. All other
+  workflows are unchanged. Merged into all four lines.
 - **A blocking suppression finding now names its rule** (#941). A `@codeCoverageIgnore` or a class-level
   `@SuppressWarnings` / `phpcs:ignore` / `@phpstan-ignore` used to be reported under an id the rule data did not have,
   so Freya could not explain it and reports showed no fix. Each now has its own rule with today's severity, blocking
