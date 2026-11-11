@@ -135,6 +135,11 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **A blocking suppression finding now names its rule** (#941). A `@codeCoverageIgnore` or a class-level
+  `@SuppressWarnings` / `phpcs:ignore` / `@phpstan-ignore` used to be reported under an id the rule data did not have,
+  so Freya could not explain it and reports showed no fix. Each now has its own rule with today's severity, blocking
+  and fix. 15 findings in 2 of 48 OPAL modules change their id and message; nothing else changes. Merged into all
+  four lines.
 - **A module's own stub for a core class no longer fails the gate as a duplicate** (#936). When a module's
   phpstan.neon wires a stub declaring a core class that the gate also stubs, the module's stub now replaces the gate's
   for that class instead of producing a blocking `class.duplicate` (seen whenever the module lies outside `vendor/`).
