@@ -135,6 +135,10 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **A module's own stub for a core class no longer fails the gate as a duplicate** (#936). When a module's
+  phpstan.neon wires a stub declaring a core class that the gate also stubs, the module's stub now replaces the gate's
+  for that class instead of producing a blocking `class.duplicate` (seen whenever the module lies outside `vendor/`).
+  PHPStan's own and extension stubs stay; every other module's config is unchanged. Merged into all four lines.
 - **A module whose metadata.php id is a class constant is checked in full** (#927). An id written as
   `Module::MODULE_ID` used to be invisible: such a module was not found by its id outside the shop configuration, and
   the asset naming, admin controller key, settings and migration checks skipped it silently. One reader now resolves
