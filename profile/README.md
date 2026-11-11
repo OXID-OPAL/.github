@@ -135,6 +135,11 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **A module whose metadata.php id is a class constant is checked in full** (#927). An id written as
+  `Module::MODULE_ID` used to be invisible: such a module was not found by its id outside the shop configuration, and
+  the asset naming, admin controller key, settings and migration checks skipped it silently. One reader now resolves
+  the constant from the module's own composer.json without running any code, and a module that is still not found is
+  named with the reason. Merged into all four lines.
 - **The template name check reads its pattern from the rule data only** (#922). The scanner no longer keeps an older
   copy of the pattern in code as a silent fallback; that copy was never used with the shipped rules and would have
   missed `$this->` assignments. Rule data without the pattern now fails loudly. **No output changes.** Merged into
