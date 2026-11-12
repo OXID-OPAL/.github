@@ -135,6 +135,12 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **Deprecations raised in the OXID core or the shop config are no longer findings of the module** (#966). Every
+  deprecation a module's tests raised was listed with the advice to fix the code at its file and line, also when that
+  code was the OXID core or the shop's `config.inc.php`. These are now listed by origin with a sample, are not
+  counted, and need no change in the module (on OXID 7.0 they were 81 findings on CE and 167 on EE). A deprecation
+  the module raises, or one raised by core code it calls, stays a finding. Across 48 OPAL modules on OXID 7.6 and 7.4
+  **no module deprecation was lost**. Merged into all five lines.
 - **The 7.2 line gives registry advice that works on OXID 7.1 and 7.2** (#960). For a Registry lookup inside a
   class extension, the 7.2 line told modules to inject `RequestInterface` and `SessionInterface`, which arrive only
   with OXID 7.4. It now names the route that exists on 7.1 and 7.2: the shop objects registered as services with a
