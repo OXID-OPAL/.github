@@ -135,6 +135,11 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **The 7.2 line gives registry advice that works on OXID 7.1 and 7.2** (#960). For a Registry lookup inside a
+  class extension, the 7.2 line told modules to inject `RequestInterface` and `SessionInterface`, which arrive only
+  with OXID 7.4. It now names the route that exists on 7.1 and 7.2: the shop objects registered as services with a
+  Registry factory, called through `ContainerFacade::get()`. The advice on the 7.3 to 7.6 lines is unchanged, and
+  **no finding changes**. Merged into all five lines.
 - **A quality-tools line for OXID 7.2 and 7.1** (#952). The new branch `b-7.2.x` targets OXID 7.2 and supports 7.1
   as the prior minor; it passes on 7.1 CE and EE and on 7.2. The rule data now covers 7.1 (PHP floor, migrate
   command) and states the tool's own PHP minimum (8.2), and every text that says where PHPMD runs now reads "the lines
