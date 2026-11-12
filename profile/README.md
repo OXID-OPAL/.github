@@ -8,7 +8,7 @@ Internal tools and modules for OXID eSales development.
 
 ## 🔮 Quality Tools — Freya MCP Server
 
-> Available since v2.1.0, **HTTP transport since v2.0** &bull; on every line: `b-7.6.x`, `b-7.5.x`, `b-7.4.x`, `b-7.3.x`
+> Available since v2.1.0, **HTTP transport since v2.0** &bull; on every line: `b-7.6.x`, `b-7.5.x`, `b-7.4.x`, `b-7.3.x`, `b-7.2.x`
 
 AI agents can now **browse the full quality rule catalog before writing code**,
 eliminating trial-and-error cycles with the quality gate.
