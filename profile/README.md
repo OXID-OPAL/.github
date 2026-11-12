@@ -135,6 +135,10 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **A quality-tools line for OXID 7.2 and 7.1** (#952). The new branch `b-7.2.x` targets OXID 7.2 and supports 7.1
+  as the prior minor; it passes on 7.1 CE and EE and on 7.2. The rule data now covers 7.1 (PHP floor, migrate
+  command) and states the tool's own PHP minimum (8.2), and every text that says where PHPMD runs now reads "the lines
+  up to 7.4", so the next older line needs no text change. Merged into all five lines.
 - **Freya tells coding agents how to write a commit message** (#947). A new workflow, `commit-messages`, states
   handbook rule R0002: English, short subject and body, the Jira ticket id with a colon as prefix or the issue number
   at the end of the subject, and no `Co-Authored-By` or other attribution trailer, also on agent commits. All other
