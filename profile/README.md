@@ -8,7 +8,7 @@ Internal tools and modules for OXID eSales development.
 
 ## 🔮 Quality Tools — Freya MCP Server
 
-> Available since v2.1.0, **HTTP transport since v2.0** &bull; on every line: `b-7.6.x`, `b-7.5.x`, `b-7.4.x`, `b-7.3.x`, `b-7.2.x`
+> Available since v2.1.0, **HTTP transport since v2.0** &bull; on every line: `b-7.6.x`, `b-7.5.x`, `b-7.4.x`, `b-7.3.x`, `b-7.2.x`, `b-7.1.x`
 
 AI agents can now **browse the full quality rule catalog before writing code**,
 eliminating trial-and-error cycles with the quality gate.
@@ -135,6 +135,11 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **A quality-tools line for OXID 7.1 and 7.0** (#984). The new branch `b-7.1.x` targets OXID 7.1 and supports 7.0
+  as the prior minor (`composer require --dev oxid-quality-tools/standards:dev-b-7.1.x`; PHP 8.2, PHPUnit 11). On
+  OXID 7.0 CE and EE it passes with 0 issues. The deprecations that the 7.0 core and the shop's `config.inc.php` raise
+  are listed outside the module (#966). The rule data covers 7.0 (PHP floor, migrate command) on every line (#972),
+  and the registry advice on this line is true for 7.0 and 7.1.
 - **The registry advice names a container call that works** (#978). For a Registry lookup inside a class
   extension, the advice now says that the fetched service, or its interface alias, must be `public: true` in the
   module's `services.yaml`; otherwise the call throws, and the quality tools report `privateServiceViaLocator`. A
