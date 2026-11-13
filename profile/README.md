@@ -135,6 +135,12 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **A test run that executes no test no longer passes** (#986). A module whose test suites hold no test, or a
+  `--filter` / `--testsuite` / `--group` that matches none, now fails with `tests.noTestsExecuted`. On the lines with
+  PHPUnit 11 (7.5 down to 7.1), a test class skipped in `setUpBeforeClass` made a whole run read as **0 tests and
+  passed**. One OPAL module ran 3473 tests there and was reported with 0. The counts are now right, with the notice
+  `tests.junitSuitesUnclosed`. A run whose every test was skipped gets the notice `tests.allTestsSkipped` with the
+  skip reasons, without failing the gate. Merged into all six lines.
 - **A quality-tools line for OXID 7.1 and 7.0** (#984). The new branch `b-7.1.x` targets OXID 7.1 and supports 7.0
   as the prior minor (`composer require --dev oxid-quality-tools/standards:dev-b-7.1.x`; PHP 8.2, PHPUnit 11). On
   OXID 7.0 CE and EE it passes with 0 issues. The deprecations that the 7.0 core and the shop's `config.inc.php` raise
