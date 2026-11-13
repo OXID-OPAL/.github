@@ -135,6 +135,13 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **The registry advice names a container call that works** (#978). For a Registry lookup inside a class
+  extension, the advice now says that the fetched service, or its interface alias, must be `public: true` in the
+  module's `services.yaml`; otherwise the call throws, and the quality tools report `privateServiceViaLocator`. A
+  module whose composer constraint still allows OXID 7.0 is pointed to
+  `ContainerFactory::getInstance()->getContainer()->get()`, because 7.0 has no ContainerFacade. The rule
+  `containerFacadeVersion` now says that it guards exactly this. 31 of 48 OPAL modules already use that route.
+  **No finding changes**. Merged into all five lines.
 - **Deprecations raised in the OXID core or the shop config are no longer findings of the module** (#966). Every
   deprecation a module's tests raised was listed with the advice to fix the code at its file and line, also when that
   code was the OXID core or the shop's `config.inc.php`. These are now listed by origin with a sample, are not
