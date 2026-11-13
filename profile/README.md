@@ -135,6 +135,12 @@ names a stock PHPMD rule the gate does not check is advisory.
   as installed that only PHPStan ships. No check reads these lookups yet, so **no finding changes**; measured with
   the OPAL modules on OXID 7.6, 7.5, 7.4 and 7.3 before and after.
 
+- **A PHPUnit run that cannot start now says why** (#1002). Before, an option PHPUnit does not know or a
+  missing bootstrap file ended as "Failed to load test suites" with an empty excerpt. Now the check names the
+  option (and says the module has nothing to fix), or names the bootstrap path, on PHPUnit 8 to 12. Any other start
+  failure shows PHPUnit's last output lines. Each option is passed only to the PHPUnit versions that know it, which
+  is what lets PHPUnit 8.5 (OXID 6.5) run at all. MANUAL corrected: `-v` is not passed to PHPUnit. Merged into all
+  six lines.
 - **A test run that executes no test no longer passes** (#986). A module whose test suites hold no test, or a
   `--filter` / `--testsuite` / `--group` that matches none, now fails with `tests.noTestsExecuted`. On the lines with
   PHPUnit 11 (7.5 down to 7.1), a test class skipped in `setUpBeforeClass` made a whole run read as **0 tests and
